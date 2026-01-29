@@ -1,0 +1,266 @@
+export const pricingTiers = [
+  {
+    name: 'Starter',
+    price: 'KES 15,000',
+    priceUSD: '$119',
+    period: 'project',
+    description: 'For small businesses and startups launching their online presence.',
+    features: [
+      'Single-Page Website or Simple Landing Page',
+      'Mobile-First Responsive Design',
+      'Basic SEO Setup',
+      'Contact & Lead Capture Forms',
+      'Basic Hosting Configuration',
+      'SSL & Basic Security Setup',
+      '7 Days Post-Launch Support',
+    ],
+    cta: 'Start Here',
+    popular: false,
+    gradient: 'from-gray-500/10 to-gray-600/10',
+  },
+  {
+    name: 'Growth',
+    price: 'KES 60,000',
+    priceUSD: '$459',
+    period: 'project',
+    description: 'Built for growing businesses that need more functionality and visibility.',
+    features: [
+      'Business Website (up to 5 pages)',
+      'Content Management System (CMS)',
+      'On-page SEO Optimization',
+      'Contact, Lead & WhatsApp Integration',
+      'Basic E-commerce or Booking System',
+      'Google Analytics Setup',
+      '14 Days Post-Launch Support',
+    ],
+    cta: 'Grow My Business',
+    popular: true,
+    gradient: 'from-primary/20 to-accent/20',
+  },
+  {
+    name: 'Pro',
+    price: 'Custom',
+    priceUSD: 'Custom',
+    period: 'quote',
+    description: 'For established SMEs with complex needs and custom workflows.',
+    features: [
+      'Custom Web Application',
+      'Advanced Integrations (Payments, CRM, APIs)',
+      'Role-Based Admin Dashboard',
+      'Scalable Infrastructure Setup',
+      'Enhanced Security & Backups',
+      'Team Training & Documentation',
+      'Ongoing Support Options',
+    ],
+    cta: 'Request a Quote',
+    popular: false,
+    gradient: 'from-purple-500/10 to-pink-500/10',
+  },
+];
+
+export const comparisonFeatures = [
+    {
+      category: 'Core Features',
+      features: [
+        {
+          name: 'Monthly Website Visitors',
+          launch: 'Up to 10,000',
+          scale: 'Up to 100,000',
+          enterprise: 'Unlimited',
+        },
+        {
+          name: 'Number of Pages',
+          launch: 'Up to 5 pages',
+          scale: 'Up to 20 pages',
+          enterprise: 'Unlimited',
+        },
+        {
+          name: 'Custom Domain',
+          launch: true,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'SSL Certificate',
+          launch: true,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'Mobile Responsive Design',
+          launch: true,
+          scale: true,
+          enterprise: true,
+        },
+      ],
+    },
+    {
+      category: 'Design & Development',
+      features: [
+        {
+          name: 'Custom Design',
+          launch: 'Template-based',
+          scale: 'Fully Custom',
+          enterprise: 'Premium Custom',
+        },
+        {
+          name: 'Animation & Interactions',
+          launch: 'Basic',
+          scale: 'Advanced',
+          enterprise: 'Premium + Custom',
+        },
+        {
+          name: 'Brand Identity Design',
+          launch: false,
+          scale: 'Logo + Colors',
+          enterprise: 'Complete Package',
+        },
+        {
+          name: 'Content Management System',
+          launch: false,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'E-commerce Functionality',
+          launch: false,
+          scale: 'Basic Shop',
+          enterprise: 'Advanced + Payment Gateway',
+        },
+      ],
+    },
+    {
+      category: 'SEO & Marketing',
+      features: [
+        {
+          name: 'Basic SEO Setup',
+          launch: true,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'Advanced SEO Strategy',
+          launch: false,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'Analytics Integration',
+          launch: 'Google Analytics',
+          scale: 'Advanced Dashboard',
+          enterprise: 'Custom Analytics Suite',
+        },
+        {
+          name: 'Social Media Integration',
+          launch: true,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'Email Marketing Setup',
+          launch: false,
+          scale: true,
+          enterprise: 'Advanced Automation',
+        },
+      ],
+    },
+    {
+      category: 'Performance & Security',
+      features: [
+        {
+          name: 'Page Load Speed',
+          launch: 'Standard',
+          scale: 'Optimized',
+          enterprise: 'Ultra-Fast CDN',
+        },
+        {
+          name: 'Security Monitoring',
+          launch: 'Basic',
+          scale: 'Enhanced',
+          enterprise: '24/7 + Security Audit',
+        },
+        {
+          name: 'Backup & Recovery',
+          launch: 'Weekly',
+          scale: 'Daily',
+          enterprise: 'Real-time',
+        },
+        {
+          name: 'DDoS Protection',
+          launch: false,
+          scale: true,
+          enterprise: 'Enterprise-grade',
+        },
+      ],
+    },
+    {
+      category: 'Support & Maintenance',
+      features: [
+        {
+          name: 'Post-Launch Support',
+          launch: '30 Days',
+          scale: '90 Days',
+          enterprise: 'Lifetime',
+        },
+        {
+          name: 'Response Time',
+          launch: '48 hours',
+          scale: '24 hours',
+          enterprise: '1 hour',
+        },
+        {
+          name: 'Dedicated Account Manager',
+          launch: false,
+          scale: false,
+          enterprise: true,
+        },
+        {
+          name: 'Monthly Updates',
+          launch: false,
+          scale: 'Up to 5 hours',
+          enterprise: 'Unlimited',
+        },
+        {
+          name: 'Emergency Support',
+          launch: false,
+          scale: 'Business Hours',
+          enterprise: '24/7',
+        },
+      ],
+    },
+    {
+      category: 'Advanced Features',
+      features: [
+        {
+          name: 'Mobile App Development',
+          launch: false,
+          scale: false,
+          enterprise: 'iOS & Android',
+        },
+        {
+          name: 'API Integrations',
+          launch: 'Basic (2)',
+          scale: 'Advanced (5)',
+          enterprise: 'Unlimited',
+        },
+        {
+          name: 'Multi-language Support',
+          launch: false,
+          scale: 'Up to 3 languages',
+          enterprise: 'Unlimited',
+        },
+        {
+          name: 'Advanced User Management',
+          launch: false,
+          scale: true,
+          enterprise: true,
+        },
+        {
+          name: 'White-label Solutions',
+          launch: false,
+          scale: false,
+          enterprise: true,
+        },
+      ],
+    },
+  ];
