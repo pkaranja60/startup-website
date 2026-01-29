@@ -4,14 +4,13 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/common/Navbar';
-import Footer from '@/components/common/Footer';
 import BookingConfirmation from '@/components/booking/BookingConfirmation';
 import DateSelector from '@/components/booking/DateSelector';
 import TimeSelector from '@/components/booking/TimeSelector';
 import ConfirmButton from '@/components/booking/ConfirmButton';
 
-export default function BookingPage() {
+
+export default function BookingClient() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -62,7 +61,7 @@ export default function BookingPage() {
   // Booking Form
   return (
     <>
-      <main className="min-h-screen pt-24 sm:pt-28 lg:pt-32 pb-16 px-4 sm:px-6">
+      <main className="min-h-screen pt-24 sm:pt-28 lg:pt-32 px-4 sm:px-6">
         <div className="container-max">
           {/* Header */}
           <motion.div

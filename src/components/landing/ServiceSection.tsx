@@ -100,7 +100,7 @@ export default function ServicesSection() {
 
                                     {/* Link */}
                                     <Link
-                                        href={service.link}
+                                        href={`/services/${service.slug}`}
                                         className={`inline-flex items-center gap-2 text-sm font-bold ${colors.text} hover:gap-3 transition-all duration-300`}
                                     >
                                         Learn More

@@ -1,17 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, X, ArrowRight, Sparkles, Info } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, Info } from 'lucide-react';
 import Link from 'next/link';
-import Navbar from '@/components/common/Navbar';
-import Footer from '@/components/common/Footer';
 import { useState } from 'react';
-import { comparisonFeatures, pricingTiers } from '@/constants/pricingData';
+import { pricingTiers } from '@/constants/pricingData';
 import ComparisonTable from '@/components/pricing/ComparisonTable';
 import FAQs from '@/components/pricing/FAQs';
-import CTASection from '@/components/common/CTASection';
+import CTAWrapper from '../common/CTAWrapper';
 
-export default function PricingPage() {
+export default function PricingClinet() {
   const [showComparison, setShowComparison] = useState(false);
 
   const fadeIn = {
@@ -21,23 +19,10 @@ export default function PricingPage() {
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   };
 
-
-
-  const renderFeatureValue = (value: boolean | string) => {
-    if (typeof value === 'boolean') {
-      return value ? (
-        <Check size={18} className="text-primary mx-auto" strokeWidth={3} />
-      ) : (
-        <X size={18} className="text-text-tertiary/30 mx-auto" strokeWidth={2} />
-      );
-    }
-    return <span className="text-sm text-text-secondary">{value}</span>;
-  };
-
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen pt-32 pb-16 px-6">
+    
+      <main className="min-h-screen pt-32 px-6">
         <div className="container-max">
           {/* Header */}
           <motion.div
@@ -208,7 +193,7 @@ export default function PricingPage() {
           <FAQs />
 
           {/* Final CTA */}
-          <CTASection />
+          <CTAWrapper />
         </div>
       </main>
     </>

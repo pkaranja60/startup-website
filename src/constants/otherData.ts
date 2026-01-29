@@ -1,55 +1,59 @@
 import { Code2, Cloud, Database, Headphones, Lightbulb, Palette, Rocket, Search, TrendingUp, Users, Zap, Smartphone, Shield, Cpu, Award } from "lucide-react";
 
-export    const services = [
-        {
-            icon: Code2,
-            title: 'Web Development',
-            description: 'Custom web applications built with Next.js, React, and modern technologies. Optimized for performance, SEO, and scalability.',
-            features: ['E-commerce platforms', 'Corporate websites', 'Web portals', 'Progressive Web Apps'],
-            color: 'primary',
-            link: '/services/web-development'
-        },
-        {
-            icon: Smartphone,
-            title: 'Mobile App Development',
-            description: 'Native and cross-platform mobile applications for iOS and Android with seamless user experiences.',
-            features: ['Native iOS & Android', 'Cross-platform (Flutter)', 'App maintenance', 'App store optimization'],
-            color: 'accent',
-            link: '/services/mobile-development'
-        },
-        {
-            icon: Shield,
-            title: 'Cybersecurity Solutions',
-            description: 'Comprehensive security services to protect your business from cyber threats and ensure compliance.',
-            features: ['Security audits', 'Penetration testing', 'Compliance consulting', '24/7 monitoring'],
-            color: 'purple',
-            link: '/services/cybersecurity'
-        },
-        {
-            icon: Cloud,
-            title: 'Cloud Infrastructure',
-            description: 'Scalable cloud solutions on AWS, Azure, and Google Cloud. Migration, optimization, and management.',
-            features: ['Cloud migration', 'DevOps setup', 'Auto-scaling', 'Cost optimization'],
-            color: 'primary',
-            link: '/services/cloud'
-        },
-        {
-            icon: Database,
-            title: 'Database Solutions',
-            description: 'Design, implementation, and optimization of robust database systems for your business data.',
-            features: ['Database design', 'Performance tuning', 'Backup solutions', 'Data migration'],
-            color: 'accent',
-            link: '/services/database'
-        },
-        {
-            icon: Cpu,
-            title: 'AI & Machine Learning',
-            description: 'Integrate intelligent automation and AI capabilities into your products and workflows.',
-            features: ['Custom AI models', 'Chatbot development', 'Data analytics', 'Process automation'],
-            color: 'purple',
-            link: '/services/ai'
-        }
-    ];
+export const services = [
+  {
+    icon: Code2,
+    title: 'Web Development',
+    slug: 'web-development',
+    description:
+      'Custom web applications built with Next.js, React, and modern technologies. Optimized for performance, SEO, and scalability.',
+    features: ['E-commerce platforms', 'Corporate websites', 'Web portals', 'Progressive Web Apps'],
+    color: 'primary',
+  },
+  {
+    icon: Smartphone,
+    title: 'Mobile App Development',
+    slug: 'mobile-development',
+    description:
+      'Native and cross-platform mobile applications for iOS and Android with seamless user experiences.',
+    features: ['Native iOS & Android', 'Cross-platform (Flutter & React Native)', 'App maintenance', 'App store optimization'],
+    color: 'accent',
+  },
+  {
+    icon: Shield,
+    title: 'Cybersecurity Solutions',
+    slug: 'cybersecurity',
+    description:
+      'Comprehensive security services to protect your business from cyber threats and ensure compliance.',
+    features: ['Security audits', 'Penetration testing', 'Compliance consulting', '24/7 monitoring'],
+    color: 'purple',
+  },
+  {
+    icon: Cloud,
+    title: 'Cloud Infrastructure',
+    slug: 'cloud',
+    description: 'Scalable cloud solutions on AWS, Azure, and Google Cloud. Migration, optimization, and management.',
+    features: ['Cloud migration', 'DevOps setup', 'Auto-scaling', 'Cost optimization'],
+    color: 'primary',
+  },
+  {
+    icon: Database,
+    title: 'Database Solutions',
+    slug: 'database',
+    description: 'Design, implementation, and optimization of robust database systems for your business data.',
+    features: ['Database design', 'Performance tuning', 'Backup solutions', 'Data migration'],
+    color: 'accent',
+  },
+  {
+    icon: Cpu,
+    title: 'AI & Machine Learning',
+    slug: 'ai',
+    description: 'Integrate intelligent automation and AI capabilities into your products and workflows.',
+    features: ['Custom AI models', 'Chatbot development', 'Data analytics', 'Process automation'],
+    color: 'purple',
+  },
+];
+
 
 export const caseStudies = [
         {

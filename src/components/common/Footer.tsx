@@ -1,168 +1,178 @@
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { footerLinks, socialLinks } from '@/constants/footerLinks';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-surface border-t border-border-subtle">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
-          {/* Brand */}
-          <div className="md:col-span-4">
-            <h3 className="text-2xl font-display font-bold mb-4">
-              Nexus<span className="text-primary">AI</span>
+      <div className="container-max px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 mb-12 lg:mb-16">
+          
+          {/* Brand Section */}
+          <div className="sm:col-span-2 lg:col-span-4">
+            <h3 className="text-2xl lg:text-3xl font-display font-bold mb-4">
+              DrD <span className="text-primary">Solutions</span>
             </h3>
-            <p className="text-text-secondary text-sm leading-relaxed mb-6">
-              Transform your business with cutting-edge AI-powered digital solutions. 
-              We build high-performance web applications, mobile apps, and brand identities 
-              that scale with your vision.
+            <p className="text-text-secondary text-sm lg:text-base leading-relaxed mb-6 max-w-sm">
+              Digital solutions built for growth. We design and develop high-performance
+              websites, mobile applications, and scalable systems tailored to your business.
             </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-border-subtle hover:border-primary flex items-center justify-center transition-all duration-300 group"
-                aria-label="Twitter"
-              >
-                <Twitter size={18} className="text-text-secondary group-hover:text-primary transition-colors" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-border-subtle hover:border-primary flex items-center justify-center transition-all duration-300 group"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={18} className="text-text-secondary group-hover:text-primary transition-colors" />
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-border-subtle hover:border-primary flex items-center justify-center transition-all duration-300 group"
-                aria-label="GitHub"
-              >
-                <Github size={18} className="text-text-secondary group-hover:text-primary transition-colors" />
-              </a>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-border-subtle hover:border-primary flex items-center justify-center transition-all duration-300 group"
+                    aria-label={social.label}
+                  >
+                    <Icon
+                      size={18}
+                      className="text-text-secondary group-hover:text-primary transition-colors"
+                    />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
           {/* Services */}
-          <div className="md:col-span-2">
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Services</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/#services" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Web Development
-                </Link>
-              </li>
-              <li>
-                <Link href="/#services" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Mobile Apps
-                </Link>
-              </li>
-              <li>
-                <Link href="/#services" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Branding & Design
-                </Link>
-              </li>
-              <li>
-                <Link href="/#services" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  AI Integration
-                </Link>
-              </li>
+          <div className="lg:col-span-2">
+            <h4 className="font-display font-bold mb-4 text-sm uppercase tracking-wider text-foreground">
+              Services
+            </h4>
+            <ul className="space-y-2.5">
+              {footerLinks.services.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-text-secondary hover:text-primary transition-colors text-sm block"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Company */}
-          <div className="md:col-span-2">
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Company</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/pricing" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/book" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Book a Call
-                </Link>
-              </li>
-              <li>
-                <Link href="/#process" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Our Process
-                </Link>
-              </li>
-              <li>
-                <Link href="/#" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Case Studies
-                </Link>
-              </li>
+          <div className="lg:col-span-2">
+            <h4 className="font-display font-bold mb-4 text-sm uppercase tracking-wider text-foreground">
+              Company
+            </h4>
+            <ul className="space-y-2.5">
+              {footerLinks.company.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-text-secondary hover:text-primary transition-colors text-sm block"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Resources */}
-          <div className="md:col-span-2">
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Resources</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/#" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/#" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link href="/#" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Support
-                </Link>
-              </li>
-              <li>
-                <Link href="/#" className="text-text-secondary hover:text-primary transition-colors text-sm">
-                  Privacy Policy
-                </Link>
-              </li>
+          <div className="lg:col-span-2">
+            <h4 className="font-display font-bold mb-4 text-sm uppercase tracking-wider text-foreground">
+              Resources
+            </h4>
+            <ul className="space-y-2.5">
+              {footerLinks.resources.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-text-secondary hover:text-primary transition-colors text-sm block"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact */}
-          <div className="md:col-span-2">
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider">Contact</h4>
+          <div className="sm:col-span-2 lg:col-span-2">
+            <h4 className="font-display font-bold mb-4 text-sm uppercase tracking-wider text-foreground">
+              Contact Us
+            </h4>
             <ul className="space-y-3">
-              <li className="flex items-center gap-2 text-text-secondary text-sm">
-                <Mail size={14} className="text-primary" />
-                hello@nexusai.com
+              <li>
+                <a
+                  href="mailto:hello@drdsolutions.com"
+                  className="flex items-start gap-2.5 text-text-secondary hover:text-primary transition-colors text-sm group"
+                >
+                  <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                  <span className="break-all">hello@drdsolutions.com</span>
+                </a>
               </li>
-              <li className="text-text-secondary text-sm">
-                +1 (555) 123-4567
+              <li>
+                <a
+                  href="tel:+254712345678"
+                  className="flex items-center gap-2.5 text-text-secondary hover:text-primary transition-colors text-sm"
+                >
+                  <Phone size={16} className="text-primary flex-shrink-0" />
+                  +254 712 345 678
+                </a>
               </li>
-              <li className="text-text-secondary text-sm leading-relaxed">
-                123 Innovation Drive<br />
-                San Francisco, CA 94103
+              <li className="flex items-start gap-2.5 text-text-secondary text-sm">
+                <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed">
+                  Westlands, Nairobi<br />
+                  Kenya
+                </span>
               </li>
             </ul>
+
+            {/* Business Hours */}
+            <div className="mt-6 pt-6 border-t border-border-subtle">
+              <p className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-2">
+                Business Hours
+              </p>
+              <p className="text-sm text-text-secondary">
+                Mon – Fri: 9:00 AM – 6:00 PM EAT<br />
+                <span className="text-xs text-text-tertiary">
+                  Support available on request
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-text-tertiary text-sm">
-            © {currentYear} NexusAI. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link href="/#" className="text-text-tertiary hover:text-primary text-sm transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="/#" className="text-text-tertiary hover:text-primary text-sm transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/#" className="text-text-tertiary hover:text-primary text-sm transition-colors">
-              Cookie Policy
-            </Link>
+        {/* Bottom Bar */}
+        <div className="border-t border-border-subtle pt-8">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 sm:gap-6">
+            <p className="text-text-tertiary text-xs sm:text-sm text-center sm:text-left">
+              © {currentYear} DrD Solutions. All rights reserved.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+              {footerLinks.legal.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-text-tertiary hover:text-primary text-xs sm:text-sm transition-colors whitespace-nowrap"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-border-subtle text-center">
+            <p className="text-xs text-text-tertiary">
+              Built with <span className="text-primary">♥</span> in Nairobi, Kenya
+            </p>
           </div>
         </div>
       </div>

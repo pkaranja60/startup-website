@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import {
     ArrowRight
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProcessSection() {
     const fadeIn = {
@@ -119,10 +120,10 @@ export default function ProcessSection() {
                         <p className="text-sm lg:text-base text-text-secondary mb-6">
                             Let's discuss your project and create a customized development plan tailored to your needs.
                         </p>
-                        <button className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-background px-8 py-4 rounded-full font-bold transition-all duration-300 shadow-xl shadow-primary/40 hover:scale-105">
+                        <Link href="/book" className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-background px-8 py-4 rounded-full font-bold transition-all duration-300 shadow-xl shadow-primary/40 hover:scale-105">
                             Schedule Free Consultation
                             <ArrowRight size={20} />
-                        </button>
+                        </Link>
                     </div>
                 </motion.div>
             </div>

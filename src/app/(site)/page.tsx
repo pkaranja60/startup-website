@@ -1,6 +1,6 @@
 'use client';
 
-import CTASection from "@/components/common/CTASection";
+import CTAWrapper from "@/components/common/CTAWrapper";
 import CaseStudiesSection from "@/components/landing/CaseStudiesSection";
 import HeroSection from "@/components/landing/HeroSection";
 import ProcessSection from "@/components/landing/ProcessSection";
@@ -19,7 +19,7 @@ export default function Home() {
         <ProcessSection />
         <CaseStudiesSection />
         <TestimonialsSection />
-        <CTASection />
+        <CTAWrapper />
       </main>
     
     </>
