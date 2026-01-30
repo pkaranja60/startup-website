@@ -6,7 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion'
-import { faqs } from '@/constants/FAQSData'
+import { faqs } from '@/data/FAQSData'
 
 export default function FAQs() {
     const fadeIn = {

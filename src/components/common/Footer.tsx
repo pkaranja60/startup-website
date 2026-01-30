@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { footerLinks, socialLinks } from '@/constants/footerLinks';
+import { footerLinks, socialLinks } from '@/data/footerLinks';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-surface border-t border-border-subtle">
-      <div className="container-max px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <div className="container-max px-4 sm:px-6 py-12 sm:py-16 lg:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 mb-12 lg:mb-16">
           
@@ -112,7 +112,7 @@ export default function Footer() {
                   href="mailto:hello@drdsolutions.com"
                   className="flex items-start gap-2.5 text-text-secondary hover:text-primary transition-colors text-sm group"
                 >
-                  <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                  <Mail size={16} className="text-primary mt-0.5 shrink-0" />
                   <span className="break-all">hello@drdsolutions.com</span>
                 </a>
               </li>
@@ -121,12 +121,12 @@ export default function Footer() {
                   href="tel:+254712345678"
                   className="flex items-center gap-2.5 text-text-secondary hover:text-primary transition-colors text-sm"
                 >
-                  <Phone size={16} className="text-primary flex-shrink-0" />
+                  <Phone size={16} className="text-primary shrink-0" />
                   +254 712 345 678
                 </a>
               </li>
               <li className="flex items-start gap-2.5 text-text-secondary text-sm">
-                <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                <MapPin size={16} className="text-primary mt-0.5 shrink-0" />
                 <span className="leading-relaxed">
                   Westlands, Nairobi<br />
                   Kenya

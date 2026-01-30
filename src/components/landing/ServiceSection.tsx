@@ -1,6 +1,6 @@
 'use client';
 
-import { services } from '@/constants/otherData';
+import { services } from '@/data/otherData';
 import { motion } from 'framer-motion';
 import { Globe, ArrowRight } from 'lucide-react';
 import Link from 'next/link';

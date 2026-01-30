@@ -1,7 +1,7 @@
 'use client';
 
 import CTAWrapper from '@/components/common/CTAWrapper';
-import { cloudBenefits, cloudProviders } from '@/constants/ServiceData';
+import { cloudBenefits, cloudProviders } from '@/data/ServiceData';
 import { motion } from 'framer-motion';
 import { Cloud, Server, ArrowRight } from 'lucide-react';
 import Link from 'next/link';

@@ -1,7 +1,7 @@
 'use client';
 
 import CTAWrapper from '@/components/common/CTAWrapper';
-import { databases, DatabaseServices } from '@/constants/ServiceData';
+import { databases, DatabaseServices } from '@/data/ServiceData';
 import { motion } from 'framer-motion';
 import { Database, ArrowRight, CheckCircle2, HardDrive } from 'lucide-react';
 import Link from 'next/link';

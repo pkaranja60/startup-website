@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { pricingTiers } from '@/constants/pricingData';
+import { pricingTiers } from '@/data/pricingData';
 import ComparisonTable from '@/components/pricing/ComparisonTable';
 import FAQs from '@/components/pricing/FAQs';
 import CTAWrapper from '../common/CTAWrapper';
@@ -22,7 +22,7 @@ export default function PricingClinet() {
   return (
     <>
     
-      <main className="min-h-screen pt-32 px-6">
+      <main className="min-h-screen pt-32">
         <div className="container-max">
           {/* Header */}
           <motion.div

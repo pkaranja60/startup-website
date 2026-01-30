@@ -2,12 +2,12 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 
 export   const footerLinks = {
     services: [
-      { label: 'Web Development', href: '/#services' },
-      { label: 'Mobile Apps', href: '/#services' },
-      { label: 'Cybersecurity', href: '/#services' },
-      { label: 'Cloud Solutions', href: '/#services' },
-      { label: 'Database Solutions', href: '/#services' },
-      { label: 'AI Integration', href: '/#services' }
+      { label: 'Web Development', href: '/services/web-development' },
+      { label: 'Mobile Apps', href: '/services/mobile-development' },
+      { label: 'Cybersecurity', href: '/services/cybersecurity' },
+      { label: 'Cloud Solutions', href: '/services/cloud' },
+      { label: 'Database Solutions', href: '/services/database' },
+      { label: 'AI Integration', href: '/services/ai' }
     ],
     company: [
       { label: 'About Us', href: '/about' },

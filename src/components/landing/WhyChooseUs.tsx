@@ -1,6 +1,6 @@
 'use client';
 
-import { guarantees, reasons } from '@/constants/otherData';
+import { guarantees, reasons } from '@/data/otherData';
 import { motion } from 'framer-motion';
 import {
     CheckCircle2,

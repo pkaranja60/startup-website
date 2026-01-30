@@ -1,4 +1,4 @@
-// src/config/ctaConfigs.ts
+// src/config/ctaConfig.ts
 import { Shield, Brain, LucideIcon } from 'lucide-react'
 
 export interface CTAConfig {
@@ -6,13 +6,19 @@ export interface CTAConfig {
   description: string
   linkHref: string
   linkText: string
-    icon?: LucideIcon 
+  icon?: LucideIcon 
   bgClass?: string
   textColorClass?: string
   extraStyles?: string
 }
 
 export const ctaConfigs: Record<string, CTAConfig> = {
+  '/': {
+    title: "Ready to Transform Your Business?",
+    description: "Let's build something amazing together. Schedule a free consultation to discuss your project.",
+    linkHref: "/book",
+    linkText: "Book a Discovery Call",
+  },
   '/pricing': {
     title: "Still have questions?",
     description: "Book a free consultation to discuss your project and get a custom quote tailored to your needs.",
@@ -32,7 +38,8 @@ export const ctaConfigs: Record<string, CTAConfig> = {
     description: "Let's build an app that your users will love",
     linkHref: "/book",
     linkText: "Get Started Today",
-    bgClass: "glass-card rounded-3xl p-12 text-center max-w-4xl mx-auto relative overflow-hidden bg-gradient-to-br from-accent/10 to-primary/10",
+    bgClass: "glass-card rounded-3xl p-12 text-center max-w-4xl mx-auto relative overflow-hidden",
+    extraStyles: "bg-gradient-to-br from-accent/10 to-primary/10",
   },
   '/services/cybersecurity': {
     title: "Secure Your Business Today",
@@ -41,7 +48,7 @@ export const ctaConfigs: Record<string, CTAConfig> = {
     linkText: "Request Security Assessment",
     icon: Shield,
     bgClass: "glass-card rounded-3xl p-12 text-center max-w-4xl mx-auto",
-    textColorClass: "text-white",
+    textColorClass: "text-purple-400",
   },
   '/services/cloud': {
     title: "Ready to Move to the Cloud?",
@@ -63,7 +70,8 @@ export const ctaConfigs: Record<string, CTAConfig> = {
     linkHref: "/book",
     linkText: "Start AI Project",
     icon: Brain,
-    bgClass: "glass-card rounded-3xl p-12 text-center max-w-4xl mx-auto relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-pink-500/10",
-    textColorClass: "text-white",
+    bgClass: "glass-card rounded-3xl p-12 text-center max-w-4xl mx-auto relative overflow-hidden",
+    textColorClass: "text-purple-400",
+    extraStyles: "bg-gradient-to-br from-purple-500/10 to-pink-500/10",
   },
 }

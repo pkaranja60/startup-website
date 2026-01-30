@@ -1,7 +1,7 @@
 'use client';
 
 import CTAWrapper from '@/components/common/CTAWrapper';
-import { appFeatures, mobileStats, mobileTechnologies, platforms } from '@/constants/ServiceData';
+import { appFeatures, mobileStats, mobileTechnologies, platforms } from '@/data/ServiceData';
 import { motion } from 'framer-motion';
 import {
   Smartphone,

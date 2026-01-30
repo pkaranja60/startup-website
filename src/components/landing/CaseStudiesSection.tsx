@@ -1,6 +1,6 @@
 'use client';
 
-import { caseStudies } from '@/constants/otherData';
+import { caseStudies } from '@/data/otherData';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';

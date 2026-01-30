@@ -119,7 +119,7 @@ export default function BookingConfirmation({
                                 Your Google Meet Link
                             </p>
                         </div>
-                        <code className="block bg-black/40 p-3 lg:p-4 rounded-lg text-primary font-mono text-xs break-all border border-border-subtle">
+                        <code className="block bg-black/30 p-3 lg:p-4 rounded-lg text-theme font-mono text-sm break-all border border-border-subtle">
                             https://meet.google.com/xyz-abc-123
                         </code>
                         <p className="text-xs text-text-tertiary mt-3">

@@ -1,6 +1,6 @@
 'use client';
 
-import { testimonials } from '@/constants/testimonialData';
+import { testimonials } from '@/data/testimonialData';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 

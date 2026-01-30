@@ -2,6 +2,7 @@ import "../globals.css";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import { rootMetadata } from "@/lib/metadata";
+import { ThemeProvider } from "next-themes";
 
 export const metadata = rootMetadata
 
@@ -19,11 +20,13 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
 
+      <ThemeProvider attribute="class" defaultTheme="system">
         <Navbar />
 
         {children}
 
         <Footer />
+      </ThemeProvider>
       </body>
     </html>
   );

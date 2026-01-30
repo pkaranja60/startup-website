@@ -6,7 +6,7 @@ import DatabaseLayout from "@/components/services/layouts/DatabaseLayout";
 import MobileDevLayout from "@/components/services/layouts/MobileDevLayout";
 import AILayout from "@/components/services/layouts/AILayout";
 import WebDevLayout from "@/components/services/layouts/WebDevLayout";
-import { services } from "@/constants/otherData";
+import { services } from "@/data/otherData";
 import DefaultServiceLayout from "@/components/services/layouts/DefaultServiceLayout";
 
 interface ServiceProps {
@@ -18,7 +18,6 @@ export default async function ServicePage({ params }: ServiceProps) {
 
   // Find service by slug
   const service = services.find(s => s.slug === slug);
-  console.log(service)
 
   if (!service) return <NotFound/>;
 

@@ -1,4 +1,4 @@
-import { comparisonFeatures } from '@/constants/pricingData'
+import { comparisonFeatures } from '@/data/pricingData'
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react'
 import Link from 'next/link';

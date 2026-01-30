@@ -1,7 +1,7 @@
 'use client';
 
 import CTAWrapper from '@/components/common/CTAWrapper';
-import { aiCapabilities, aiUseCases } from '@/constants/ServiceData';
+import { aiCapabilities, aiUseCases } from '@/data/ServiceData';
 import { motion } from 'framer-motion';
 import { Cpu, Brain, Sparkles, ArrowRight, Bot, MessageSquare, BarChart3, Zap } from 'lucide-react';
 import Link from 'next/link';

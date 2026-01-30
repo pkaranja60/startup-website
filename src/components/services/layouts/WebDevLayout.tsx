@@ -11,7 +11,7 @@ import {
   Users
 } from 'lucide-react';
 import Link from 'next/link';
-import { features,projects, webTechnologies } from '@/constants/ServiceData';
+import { features,projects, webTechnologies } from '@/data/ServiceData';
 import CTAWrapper from '@/components/common/CTAWrapper';
 
 export default function WebDevLayout() {
@@ -22,7 +22,6 @@ export default function WebDevLayout() {
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }
   };
 
-  
   return (
     <>
       <main className="min-h-screen pt-32 overflow-hidden">
@@ -64,7 +63,7 @@ export default function WebDevLayout() {
                     'Scalable cloud infrastructure'
                   ].map((benefit) => (
                     <div key={benefit} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <CheckCircle2 size={14} className="text-primary" strokeWidth={3} />
                       </div>
                       <span className="text-sm text-text-secondary">{benefit}</span>
@@ -105,13 +104,13 @@ export default function WebDevLayout() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                       <div className="w-3 h-3 rounded-full bg-primary/80" />
                     </div>
-                    <div className="flex-grow ml-4 bg-white/5 rounded-lg px-3 py-1.5 text-xs text-text-tertiary">
+                    <div className="grow ml-4 bg-white/5 rounded-lg px-3 py-1.5 text-xs text-text-tertiary">
                       https://yourwebsite.com
                     </div>
                   </div>
                   
                   {/* Browser Content - Placeholder */}
-                  <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 via-surface to-accent/10 p-8 flex items-center justify-center relative overflow-hidden">
+                  <div className="aspect-4/3 bg-linear-to-br from-primary/10 via-surface to-accent/10 p-8 flex items-center justify-center relative overflow-hidden">
                     {/* Animated Grid Background */}
                     <div className="absolute inset-0 opacity-10">
                       <div className="absolute inset-0" style={{
@@ -133,7 +132,7 @@ export default function WebDevLayout() {
                       }}
                       className="relative"
                     >
-                      <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm border-2 border-primary/30 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-3xl bg-linear-to-br from-primary/20 to-accent/20 backdrop-blur-sm border-2 border-primary/30 flex items-center justify-center">
                         <Code2 size={64} className="text-primary" />
                       </div>
                     </motion.div>
@@ -179,7 +178,7 @@ export default function WebDevLayout() {
         </section>
 
         {/* Features Grid */}
-        <section className="section-padding bg-gradient-to-b from-background to-surface">
+        <section className="section-padding bg-linear-to-b from-background to-surface">
           <div className="container-max">
             <motion.div {...fadeIn} className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-display font-bold mb-4">
@@ -200,7 +199,7 @@ export default function WebDevLayout() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="glass-card rounded-3xl p-8 hover:bg-white/[0.05] transition-all"
+                    className="glass-card rounded-3xl p-8 hover:bg-white/5 transition-all"
                   >
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
                       <Icon size={32} className="text-primary" />
@@ -245,7 +244,7 @@ export default function WebDevLayout() {
         </section>
 
         {/* Recent Projects */}
-        <section className="section-padding bg-gradient-to-b from-background to-surface">
+        <section className="section-padding bg-linear-to-b from-background to-surface">
           <div className="container-max">
             <motion.div {...fadeIn} className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-display font-bold mb-4">
@@ -261,7 +260,7 @@ export default function WebDevLayout() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="glass-card rounded-3xl p-6 hover:bg-white/[0.05] transition-all"
+                  className="glass-card rounded-3xl p-6 hover:bg-white/5 transition-all"
                 >
                   <h3 className="text-xl font-display font-bold mb-2">{project.title}</h3>
                   <p className="text-text-secondary text-sm mb-6">{project.description}</p>

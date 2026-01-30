@@ -1,18 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { services } from '@/data/otherData';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false); 
+
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -63,11 +66,58 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/book"
-              className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
+              href="/blog"
+              className="text-sm font-medium text-text-secondary hover:text-foreground transition-colors relative group"
             >
-              Book a Discovery Call
+              Blog
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
             </Link>
+
+            {/* Services Dropdown */}
+            <div className="relative">
+              <button
+                onMouseEnter={() => setServicesOpen(true)}
+                onMouseLeave={() => setServicesOpen(false)}
+                className="text-sm font-medium text-text-secondary hover:text-foreground flex items-center gap-1 transition-colors relative group"
+              >
+                Services <ChevronDown size={16} />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+              </button>
+
+              <AnimatePresence>
+                {servicesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    onMouseEnter={() => setServicesOpen(true)}
+                    onMouseLeave={() => setServicesOpen(false)}
+                    className="absolute top-15 left-0 right-0 w-64 glass-card backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 border border-white/10 z-50 overflow-hidden"
+                  >
+                    {services.map(service => (
+                      <Link
+                        key={service.slug}
+                        href={`/services/${service.slug}`}
+                        className="block px-4 py-3 text-text-primary hover:text-primary hover:bg-white/5 transition-all"
+                      >
+                        {service.title}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+      {/* Conditional Book Link */}
+      {pathname === '/blog' ? (
+        <Link
+          href="/book"
+          className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
+        >
+          Book a Discovery Call
+        </Link>
+      ) : null}
           </div>
 
           {/* Mobile Menu Button */}
@@ -97,43 +147,67 @@ export default function Navbar() {
             />
 
             {/* Mobile Menu */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-30 left-4 right-4 z-50 md:hidden"
-            >
-              <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10">
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href="/"
-                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Home
-                  </Link>
+         {/* Mobile Menu */}
+<motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -20 }}
+  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+  className="fixed top-30 left-4 right-4 z-50 md:hidden"
+>
+  <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10 max-h-[80vh] overflow-y-auto">
+    <div className="flex flex-col gap-2">
+      <Link
+        href="/"
+        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+        onClick={() => setIsOpen(false)}
+      >
+        Home
+      </Link>
 
-                  <Link
-                    href="/pricing"
-                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Pricing
-                  </Link>
+      <Link
+        href="/pricing"
+        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+        onClick={() => setIsOpen(false)}
+      >
+        Pricing
+      </Link>
 
-                  <div className="h-px bg-border-subtle my-2" />
+      <Link
+        href="/blog"
+        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+        onClick={() => setIsOpen(false)}
+      >
+        Blog
+      </Link>
 
-                  <Link
-                    href="/book"
-                    className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Book a Discovery Call
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
+      {/* Services Dropdown Mobile */}
+      <div className="flex flex-col">
+        {services.map(service => (
+          <Link
+            key={service.slug}
+            href={`/services/${service.slug}`}
+            className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+            onClick={() => setIsOpen(false)}
+          >
+            {service.title}
+          </Link>
+        ))}
+      </div>
+
+      <div className="h-px bg-border-subtle my-2" />
+
+      <Link
+        href="/book"
+        className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
+        onClick={() => setIsOpen(false)}
+      >
+        Book a Discovery Call
+      </Link>
+    </div>
+  </div>
+</motion.div>
+
           </>
         )}
       </AnimatePresence>

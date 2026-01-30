@@ -1,7 +1,7 @@
 'use client';
 
 import CTAWrapper from '@/components/common/CTAWrapper';
-import { cybersecurityServices, cybersecurityThreats } from '@/constants/ServiceData';
+import { cybersecurityServices, cybersecurityThreats } from '@/data/ServiceData';
 import { motion } from 'framer-motion';
 import {
   Shield,
