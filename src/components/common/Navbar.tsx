@@ -75,6 +75,14 @@ export default function Navbar() {
             </Link>
 
             <Link
+              href="/case-studies"
+              className="text-sm font-medium text-text-secondary hover:text-foreground transition-colors relative group"
+            >
+              Case Studies
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+            </Link>
+
+            <Link
               href="/blog"
               className="text-sm font-medium text-text-secondary hover:text-foreground transition-colors relative group"
             >
@@ -188,6 +196,14 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                   >
                     Pricing
+                  </Link>
+
+                  <Link
+                    href="/case-studies"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Case Studies
                   </Link>
 
                   <Link

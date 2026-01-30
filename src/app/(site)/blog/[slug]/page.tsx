@@ -1,57 +1,86 @@
-'use client';
-
-import { useParams } from 'next/navigation';
-import { blogs } from '@/data/blogs';
+import { client } from '@/sanity/lib/client';
+import { POST_QUERY } from '@/sanity/lib/queries';
+import { Post } from '@/sanity/lib/types';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { urlFor } from '@/sanity/lib/image';
 import NotFound from '@/app/not-found';
+import SanityContent from '@/components/SanityContent';
 
-export default function BlogSlugPage() {
-  const { slug } = useParams();
-  const blog = blogs.find((b) => b.slug === slug);
+export const revalidate = 60;
 
-  if (!blog) return <NotFound/>;
+export default async function BlogSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post: Post = await client.fetch(POST_QUERY, { slug });
 
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }
-  };
+  if (!post) return <NotFound />;
+
+  const authorName = typeof post.author === 'object' ? post.author.name : post.author;
+  const authorImage = typeof post.author === 'object' ? post.author.image : null;
 
   return (
     <main className="max-h-screen pt-32 pb-20 px-4 sm:px-6">
-      <div className="container-max">
-        <motion.div {...fadeIn} className="mb-8">
-          <h1 className="text-4xl lg:text-5xl font-display font-bold mb-2">{blog.title}</h1>
-          <p className="text-text-secondary text-sm mb-4">
-            By {blog.author} · {blog.date} · {blog.readingTime}
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            {blog.tags.map(tag => (
-              <span key={tag} className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary font-bold">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div {...fadeIn} className="prose max-w-none text-text-primary">
-          {/* Dummy content */}
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id libero eu quam tristique ullamcorper.</p>
-          <p>Aliquam erat volutpat. Suspendisse potenti. Quisque imperdiet mi a tellus efficitur, non hendrerit erat fermentum.</p>
-          <h2>Section 1</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec tortor sem.</p>
-          <h2>Section 2</h2>
-          <p>Nulla facilisi. Sed vel nunc ac nulla mollis tincidunt.</p>
-        </motion.div>
-
+      <div className="container-max max-w-4xl mx-auto">
         <Link
           href="/blog"
-          className="mt-8 inline-block text-primary hover:text-primary-hover font-bold"
+          className="mb-8 inline-block text-primary hover:text-primary-hover font-bold transition-colors"
         >
           ← Back to Blog
         </Link>
+
+        <div className="mb-12">
+          <h1 className="text-4xl lg:text-6xl font-display font-bold mb-8 leading-tight">
+            {post.title}
+          </h1>
+
+          <div className="flex items-center gap-4 mb-8">
+            {authorImage ? (
+              <div className="w-12 h-12 rounded-full overflow-hidden border border-primary/20">
+                <Image
+                  src={urlFor(authorImage).url()}
+                  alt={authorName}
+                  width={48}
+                  height={48}
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 text-primary font-bold">
+                    {authorName.charAt(0)}
+                </div>
+            )}
+            <div>
+              <p className="text-text-primary font-bold">{authorName}</p>
+              <p className="text-sm text-text-tertiary">
+                {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2 flex-wrap mb-8">
+            {post.categories?.map((category: any) => (
+              <span key={category.slug?.current || category.title} className="text-xs px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold border border-primary/20">
+                {category.title}
+              </span>
+            ))}
+          </div>
+
+          {post.mainImage && (
+            <div className="relative w-full h-[400px] lg:h-[500px] mb-12 overflow-hidden rounded-3xl border border-white/10">
+              <Image
+                src={urlFor(post.mainImage).url()}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="prose-container">
+          <SanityContent value={post.body} />
+        </div>
       </div>
     </main>
   );
