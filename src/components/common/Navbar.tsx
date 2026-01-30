@@ -36,6 +36,48 @@ export default function Navbar() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  const ThemeToggle = () => (
+    <button
+      onClick={toggleTheme}
+      className="relative p-2 rounded-full glass-card hover:bg-white/10 transition-all duration-300 group overflow-hidden"
+      aria-label="Toggle theme"
+    >
+      <div className="relative w-6 h-6">
+        <AnimatePresence mode="wait" initial={false}>
+          {theme === 'dark' ? (
+            <motion.div
+              key="sun"
+              initial={{ y: 20, opacity: 0, rotate: 45 }}
+              animate={{ y: 0, opacity: 1, rotate: 0 }}
+              exit={{ y: -20, opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <Sun className="w-6 h-6 text-yellow-500" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="moon"
+              initial={{ y: 20, opacity: 0, rotate: 45 }}
+              animate={{ y: 0, opacity: 1, rotate: 0 }}
+              exit={{ y: -20, opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <Moon className="w-6 h-6 text-slate-700" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      {/* Subtle background glow effect on hover */}
+      <motion.div 
+        className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        aria-hidden="true"
+      />
+    </button>
+  );
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 pt-6 px-4 md:px-6">
@@ -138,13 +180,7 @@ export default function Navbar() {
           </div>
 
           {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="text-text-secondary hover:text-foreground transition-colors p-2"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
-          </button>
+          <ThemeToggle />
 
           {/* Mobile Menu Button */}
           <button

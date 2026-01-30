@@ -2,6 +2,9 @@ import { client } from '@/sanity/lib/client';
 import { PROJECTS_QUERY } from '@/sanity/lib/queries';
 import { Project } from '@/sanity/lib/types';
 import ProjectList from '@/components/case-studies/ProjectList';
+import { caseStudyMetadata } from '@/lib/metadata';
+
+export const metadata = caseStudyMetadata;
 
 export const revalidate = 60;
 

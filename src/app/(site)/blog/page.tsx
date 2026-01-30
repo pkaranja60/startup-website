@@ -2,6 +2,9 @@ import { client } from '@/sanity/lib/client';
 import { POSTS_QUERY } from '@/sanity/lib/queries';
 import { Post } from '@/sanity/lib/types';
 import BlogList from '@/components/blog/BlogList';
+import { blogMetadata } from '@/lib/metadata';
+
+export const metadata = blogMetadata;
 
 export const revalidate = 60; // Revalidate every minute
 

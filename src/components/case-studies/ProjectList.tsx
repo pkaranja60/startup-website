@@ -1,17 +1,56 @@
 'use client';
 
-import Link from 'next/link';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { urlFor } from '@/sanity/lib/image';
+import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project } from '@/sanity/lib/types';
-import { Rocket, ExternalLink, ArrowRight } from 'lucide-react';
+import ProjectCard from './ProectCard';
 
 interface ProjectListProps {
   projects: Project[];
+  itemsPerPage?: number;
 }
 
-export default function ProjectList({ projects }: ProjectListProps) {
+export default function ProjectList({ projects, itemsPerPage = 6 }: ProjectListProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTech, setSelectedTech] = useState<string>('all');
+
+  // Get unique technologies
+  const technologies = useMemo(() => {
+    const techs = new Set<string>();
+    projects.forEach(project => {
+      project.techStack?.forEach(tech => {
+        techs.add(tech);
+      });
+    });
+    return ['all', ...Array.from(techs).sort()];
+  }, [projects]);
+
+  // Filter projects
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => {
+      const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          project.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesTech = selectedTech === 'all' || 
+                         project.techStack?.includes(selectedTech);
+      
+      return matchesSearch && matchesTech;
+    });
+  }, [projects, searchQuery, selectedTech]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProjects = filteredProjects.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedTech]);
+
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -20,81 +59,136 @@ export default function ProjectList({ projects }: ProjectListProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-      {projects.map((project, index) => (
-        <motion.div
-          key={project._id}
-          {...fadeIn}
-          transition={{ ...fadeIn.transition, delay: index * 0.1 }}
-          className="group relative glass-card p-0 overflow-hidden rounded-[2.5rem] border border-white/10 hover:border-primary/30 transition-all duration-500"
-        >
-          {project.image && (
-            <div className="relative h-64 md:h-80 w-full overflow-hidden">
-              <Image
-                src={urlFor(project.image).url()}
-                alt={project.title}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-background via-black/20 to-transparent opacity-60" />
-              
-              {project.featured && (
-                <div className="absolute top-6 left-6 px-4 py-1.5 rounded-full bg-primary text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-primary/20">
-                  <Rocket size={14} />
-                  Featured
-                </div>
-              )}
+    <div>
+      {/* Filters */}
+      <div className="mb-12 space-y-4">
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary" />
+          <input
+            type="text"
+            placeholder="Search case studies..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 rounded-full bg-white/5 border border-border-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+          />
+        </div>
+
+        {/* Technology Filter */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-text-tertiary">
+            <Filter size={16} />
+            <span className="font-bold">Technology:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {technologies.slice(0, 8).map((tech) => (
+              <button
+                key={tech}
+                onClick={() => setSelectedTech(tech)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedTech === tech
+                    ? 'bg-primary text-background'
+                    : 'bg-white/5 text-text-secondary hover:bg-white/10 border border-border-subtle'
+                }`}
+              >
+                {tech === 'all' ? 'All' : tech}
+              </button>
+            ))}
+            {technologies.length > 8 && (
+              <button
+                onClick={() => setSelectedTech('all')}
+                className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 text-text-tertiary hover:bg-white/10 border border-border-subtle"
+              >
+                +{technologies.length - 8} more
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <p className="text-sm text-text-tertiary">
+          Showing {currentProjects.length} of {filteredProjects.length} projects
+          {searchQuery && ` for "${searchQuery}"`}
+        </p>
+      </div>
+
+      {/* Projects Grid */}
+      {currentProjects.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-10">
+            {currentProjects.map((project, index) => (
+              <motion.div
+                key={project._id}
+                {...fadeIn}
+                transition={{ ...fadeIn.transition, delay: index * 0.1 }}
+              >
+                <ProjectCard project={project} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-xl bg-white/5 border border-border-subtle hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft size={20} />
+              </button>
+
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 rounded-xl font-bold transition-all ${
+                          currentPage === page
+                            ? 'bg-primary text-background'
+                            : 'bg-white/5 border border-border-subtle hover:bg-white/10'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span key={page} className="w-10 h-10 flex items-center justify-center text-text-tertiary">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-xl bg-white/5 border border-border-subtle hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronRight size={20} />
+              </button>
             </div>
           )}
-
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-2xl md:text-3xl font-display font-bold group-hover:text-primary transition-colors duration-300">
-                {project.title}
-              </h2>
-              <a 
-                href={project.liveLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/5 hover:bg-primary/20 text-text-tertiary hover:text-primary transition-all duration-300"
-              >
-                <ExternalLink size={20} />
-              </a>
-            </div>
-
-            <p className="text-text-secondary text-base mb-6 line-clamp-2">
-              {project.description}
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-8">
-              {project.techStack?.map((tech) => (
-                <span 
-                  key={tech} 
-                  className="px-3 py-1 rounded-full bg-white/5 text-text-tertiary text-xs border border-white/5 group-hover:border-primary/20 transition-colors"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between">
-                <Link
-                href={`/case-studies/${project.slug}`}
-                className="inline-flex items-center gap-2 text-text-primary hover:text-primary font-bold group/link transition-all"
-                >
-                    View Case Study 
-                    <ArrowRight size={18} className="group-hover/link:translate-x-1 transition-transform" />
-                </Link>
-                
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/20">
-                        {typeof project.owner === 'object' ? project.owner.name.charAt(0) : project.owner.charAt(0)}
-                    </div>
-                </div>
-            </div>
-          </div>
-        </motion.div>
-      ))}
+        </>
+      ) : (
+        <div className="text-center py-20 glass-card rounded-3xl">
+          <p className="text-text-secondary text-lg">
+            No case studies found. Try adjusting your filters.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

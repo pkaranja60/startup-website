@@ -1,17 +1,21 @@
 import { defineQuery } from 'next-sanity'
 
 // Blog Queries
-export const POSTS_QUERY = defineQuery(`*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
+
+export const POSTS_QUERY = defineQuery(`
+*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
   _id,
   title,
   "slug": slug.current,
-  "author": author->name,
+  "author": coalesce(author->name, "Unknown"),
   "authorImage": author->image,
   mainImage,
   publishedAt,
-  "excerpt": array::join(string::split(pt::text(body), "")[0..200], "") + "...",
-  categories[]->{title, slug}
-}`)
+  "excerpt": pt::text(body)[0...200],
+  "categories": categories[]->{title, slug}
+}
+`)
+
 
 export const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0] {
   _id,
