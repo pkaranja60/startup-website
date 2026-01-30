@@ -1,33 +1,23 @@
-import "../globals.css";
+import { ReactNode } from "react";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import { rootMetadata } from "@/lib/metadata";
-import { ThemeProvider } from "next-themes";
 
-export const metadata = rootMetadata
+export const metadata = rootMetadata;
 
-export default function RootLayout({
+export default function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-      </head>
-      <body className="antialiased">
-
-      <ThemeProvider attribute="class" defaultTheme="system">
+    <>
+      {/* You can keep the content for the site layout, but no <html> or <body> */}
+     
         <Navbar />
-
         {children}
-
         <Footer />
-      </ThemeProvider>
-      </body>
-    </html>
+     
+    </>
   );
 }

@@ -22,8 +22,8 @@
    🌞 LIGHT MODE — DEFAULT (Apple / Linear / Vercel)
    ========================================================= */
 @theme {
-    --color-background: #fafafa;
-    --color-surface: #ffffff;
+    --color-background: #f5f5f0;
+    --color-surface: #faf9f6;
     --color-foreground: #0a0f14;
 
     --color-primary: #007aff;

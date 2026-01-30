@@ -1,18 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react'; // Add Moon and Sun icons
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { services } from '@/data/otherData';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes'; // Import useTheme
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false); 
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   const pathname = usePathname();
+
+  // Theme management using next-themes
+  const { theme, setTheme } = useTheme(); // Access theme and setTheme
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -26,6 +30,53 @@ export default function Navbar() {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const ThemeToggle = () => (
+    <button
+      onClick={toggleTheme}
+      className="relative p-2 rounded-full glass-card hover:bg-white/10 transition-all duration-300 group overflow-hidden"
+      aria-label="Toggle theme"
+    >
+      <div className="relative w-6 h-6">
+        <AnimatePresence mode="wait" initial={false}>
+          {theme === 'dark' ? (
+            <motion.div
+              key="sun"
+              initial={{ y: 20, opacity: 0, rotate: 45 }}
+              animate={{ y: 0, opacity: 1, rotate: 0 }}
+              exit={{ y: -20, opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <Sun className="w-6 h-6 text-yellow-500" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="moon"
+              initial={{ y: 20, opacity: 0, rotate: 45 }}
+              animate={{ y: 0, opacity: 1, rotate: 0 }}
+              exit={{ y: -20, opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <Moon className="w-6 h-6 text-slate-700" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      {/* Subtle background glow effect on hover */}
+      <motion.div 
+        className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        aria-hidden="true"
+      />
+    </button>
+  );
 
   return (
     <>
@@ -62,6 +113,14 @@ export default function Navbar() {
               className="text-sm font-medium text-text-secondary hover:text-foreground transition-colors relative group"
             >
               Pricing
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+            </Link>
+
+            <Link
+              href="/case-studies"
+              className="text-sm font-medium text-text-secondary hover:text-foreground transition-colors relative group"
+            >
+              Case Studies
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
             </Link>
 
@@ -109,16 +168,19 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-      {/* Conditional Book Link */}
-      {pathname === '/blog' ? (
-        <Link
-          href="/book"
-          className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
-        >
-          Book a Discovery Call
-        </Link>
-      ) : null}
+            {/* Conditional Book Link */}
+            {pathname === '/blog' ? (
+              <Link
+                href="/book"
+                className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
+              >
+                Book a Discovery Call
+              </Link>
+            ) : null}
           </div>
+
+          {/* Theme Toggle Button */}
+          <ThemeToggle />
 
           {/* Mobile Menu Button */}
           <button
@@ -147,67 +209,73 @@ export default function Navbar() {
             />
 
             {/* Mobile Menu */}
-         {/* Mobile Menu */}
-<motion.div
-  initial={{ opacity: 0, y: -20 }}
-  animate={{ opacity: 1, y: 0 }}
-  exit={{ opacity: 0, y: -20 }}
-  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-  className="fixed top-30 left-4 right-4 z-50 md:hidden"
->
-  <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10 max-h-[80vh] overflow-y-auto">
-    <div className="flex flex-col gap-2">
-      <Link
-        href="/"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Home
-      </Link>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed top-30 left-4 right-4 z-50 md:hidden"
+            >
+              <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10 max-h-[80vh] overflow-y-auto">
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Home
+                  </Link>
 
-      <Link
-        href="/pricing"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Pricing
-      </Link>
+                  <Link
+                    href="/pricing"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Pricing
+                  </Link>
 
-      <Link
-        href="/blog"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Blog
-      </Link>
+                  <Link
+                    href="/case-studies"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Case Studies
+                  </Link>
 
-      {/* Services Dropdown Mobile */}
-      <div className="flex flex-col">
-        {services.map(service => (
-          <Link
-            key={service.slug}
-            href={`/services/${service.slug}`}
-            className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-            onClick={() => setIsOpen(false)}
-          >
-            {service.title}
-          </Link>
-        ))}
-      </div>
+                  <Link
+                    href="/blog"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Blog
+                  </Link>
 
-      <div className="h-px bg-border-subtle my-2" />
+                  {/* Services Dropdown Mobile */}
+                  <div className="flex flex-col">
+                    {services.map(service => (
+                      <Link
+                        key={service.slug}
+                        href={`/services/${service.slug}`}
+                        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {service.title}
+                      </Link>
+                    ))}
+                  </div>
 
-      <Link
-        href="/book"
-        className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
-        onClick={() => setIsOpen(false)}
-      >
-        Book a Discovery Call
-      </Link>
-    </div>
-  </div>
-</motion.div>
+                  <div className="h-px bg-border-subtle my-2" />
 
+                  <Link
+                    href="/book"
+                    className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Book a Discovery Call
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>

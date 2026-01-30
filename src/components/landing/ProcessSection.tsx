@@ -129,7 +129,7 @@ export default function ProcessSection() {
                                         {/* Mobile Content */}
                                         <div className="glass-card rounded-2xl p-6 hover:bg-white/5 transition-all duration-300">
                                             <div className="flex items-start gap-4 mb-4">
-                                                <div className="text-4xl font-display font-bold text-white/5 leading-none shrink-0">
+                                                <div className="text-4xl font-display font-bold text-theme opacity-50 leading-none shrink-0">
                                                     {step.step}
                                                 </div>
                                                 <div className="grow">

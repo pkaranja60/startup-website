@@ -88,3 +88,26 @@ export const bookCallMetadata: Metadata = {
       "Book a free discovery call and explore how DrD Solutions can help bring your project to life."
   }
 };
+
+export const blogMetadata: Metadata = {
+  title: "Blog",
+  description:
+    "Insights, tips, and articles about web development, mobile apps, and digital branding from the experts at DrD Solutions.",
+  openGraph: {
+    title: "Blog | DrD Solutions",
+    description:
+      "Expert insights on digital solutions, development, and branding."
+  }
+};
+
+export const caseStudyMetadata: Metadata = {
+  title: "Case Studies",
+  description:
+    "Explore our portfolio of successful projects, from high-performance websites to innovative mobile applications.",
+  openGraph: {
+    title: "Case Studies | DrD Solutions",
+    description:
+      "Real-world examples of how we've helped businesses scale through modern technology."
+  }
+};
+
