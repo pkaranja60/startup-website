@@ -22,7 +22,7 @@ export default function PricingClinet() {
   return (
     <>
     
-      <main className="min-h-screen pt-32">
+      <main className="min-h-screen pt-32 px-4 sm:px-6">
         <div className="container-max">
           {/* Header */}
           <motion.div

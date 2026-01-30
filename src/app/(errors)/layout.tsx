@@ -1,6 +1,4 @@
 import { ReactNode } from "react";
-import "../globals.css";
-import { ThemeProvider } from "next-themes";
 
 interface ErrorsLayoutProps {
   children: ReactNode;
@@ -8,14 +6,11 @@ interface ErrorsLayoutProps {
 
 export default function ErrorsLayout({ children }: ErrorsLayoutProps) {
   return (
-    <html lang="en">
-      <body>
-        <main>
-       <ThemeProvider attribute="class" defaultTheme="system">
-           {children}
-       </ThemeProvider>
-          </main>
-      </body>
-    </html>
+    <main>
+      {/* You can still wrap with ThemeProvider if needed */}
+   
+        {children}
+     
+    </main>
   );
 }

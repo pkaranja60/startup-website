@@ -20,7 +20,7 @@ export default function BlogSlugPage() {
   };
 
   return (
-    <main className="max-h-screen pt-32 pb-20">
+    <main className="max-h-screen pt-32 pb-20 px-4 sm:px-6">
       <div className="container-max">
         <motion.div {...fadeIn} className="mb-8">
           <h1 className="text-4xl lg:text-5xl font-display font-bold mb-2">{blog.title}</h1>

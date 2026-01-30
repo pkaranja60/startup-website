@@ -1,18 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react'; // Add Moon and Sun icons
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { services } from '@/data/otherData';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes'; // Import useTheme
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false); 
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   const pathname = usePathname();
+
+  // Theme management using next-themes
+  const { theme, setTheme } = useTheme(); // Access theme and setTheme
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -26,6 +30,11 @@ export default function Navbar() {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <>
@@ -109,16 +118,25 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-      {/* Conditional Book Link */}
-      {pathname === '/blog' ? (
-        <Link
-          href="/book"
-          className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
-        >
-          Book a Discovery Call
-        </Link>
-      ) : null}
+            {/* Conditional Book Link */}
+            {pathname === '/blog' ? (
+              <Link
+                href="/book"
+                className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"
+              >
+                Book a Discovery Call
+              </Link>
+            ) : null}
           </div>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="text-text-secondary hover:text-foreground transition-colors p-2"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+          </button>
 
           {/* Mobile Menu Button */}
           <button
@@ -147,67 +165,65 @@ export default function Navbar() {
             />
 
             {/* Mobile Menu */}
-         {/* Mobile Menu */}
-<motion.div
-  initial={{ opacity: 0, y: -20 }}
-  animate={{ opacity: 1, y: 0 }}
-  exit={{ opacity: 0, y: -20 }}
-  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-  className="fixed top-30 left-4 right-4 z-50 md:hidden"
->
-  <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10 max-h-[80vh] overflow-y-auto">
-    <div className="flex flex-col gap-2">
-      <Link
-        href="/"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Home
-      </Link>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed top-30 left-4 right-4 z-50 md:hidden"
+            >
+              <div className="glass-card backdrop-blur-xl rounded-3xl p-6 shadow-2xl shadow-black/40 border border-white/10 max-h-[80vh] overflow-y-auto">
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Home
+                  </Link>
 
-      <Link
-        href="/pricing"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Pricing
-      </Link>
+                  <Link
+                    href="/pricing"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Pricing
+                  </Link>
 
-      <Link
-        href="/blog"
-        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-        onClick={() => setIsOpen(false)}
-      >
-        Blog
-      </Link>
+                  <Link
+                    href="/blog"
+                    className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Blog
+                  </Link>
 
-      {/* Services Dropdown Mobile */}
-      <div className="flex flex-col">
-        {services.map(service => (
-          <Link
-            key={service.slug}
-            href={`/services/${service.slug}`}
-            className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
-            onClick={() => setIsOpen(false)}
-          >
-            {service.title}
-          </Link>
-        ))}
-      </div>
+                  {/* Services Dropdown Mobile */}
+                  <div className="flex flex-col">
+                    {services.map(service => (
+                      <Link
+                        key={service.slug}
+                        href={`/services/${service.slug}`}
+                        className="text-base font-medium py-3 px-4 hover:text-primary hover:bg-white/5 rounded-xl transition-all"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {service.title}
+                      </Link>
+                    ))}
+                  </div>
 
-      <div className="h-px bg-border-subtle my-2" />
+                  <div className="h-px bg-border-subtle my-2" />
 
-      <Link
-        href="/book"
-        className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
-        onClick={() => setIsOpen(false)}
-      >
-        Book a Discovery Call
-      </Link>
-    </div>
-  </div>
-</motion.div>
-
+                  <Link
+                    href="/book"
+                    className="bg-primary hover:bg-primary-hover text-background px-6 py-3.5 rounded-full font-bold text-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Book a Discovery Call
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>

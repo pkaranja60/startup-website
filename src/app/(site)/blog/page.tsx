@@ -13,7 +13,7 @@ export default function BlogPage() {
   };
 
   return (
-    <main className="max-h-screen pt-32 pb-20">
+    <main className="max-h-screen pt-32 pb-20 px-4 sm:px-6">
       <div className="container-max">
          {/* Header */}
         <motion.div {...fadeIn} className="text-center mb-16">
