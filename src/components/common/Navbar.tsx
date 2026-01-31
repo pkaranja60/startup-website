@@ -152,7 +152,7 @@ export default function Navbar() {
                     transition={{ duration: 0.2 }}
                     onMouseEnter={() => setServicesOpen(true)}
                     onMouseLeave={() => setServicesOpen(false)}
-                    className="absolute top-15 left-0 right-0 w-64 glass-card backdrop-blur-xl rounded-2xl shadow-lg shadow-black/20 border border-white/10 z-50 overflow-hidden"
+                    className="absolute top-15 left-0 right-0 w-64 glass backdrop-blur-5xl rounded-2xl shadow-lg shadow-black/20 border border-white/10 z-50 overflow-hidden"
                   >
                     {services.map(service => (
                       <Link

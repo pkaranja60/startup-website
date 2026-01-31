@@ -41,7 +41,6 @@ export default async function ServicePage({ params }: ServiceProps) {
 
 // Pre-generate all service pages (SSG)
 export async function generateStaticParams() {
-  console.log("Static paths:", services.map(s => s.slug));
   return services.map(s => ({ slug: s.slug }));
 }
 

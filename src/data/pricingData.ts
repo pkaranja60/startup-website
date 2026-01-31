@@ -6,7 +6,7 @@ export const pricingTiers = [
     period: 'project',
     description: 'For small businesses and startups launching their online presence.',
     features: [
-      'Single-Page Website or Simple Landing Page',
+      'Business Website (up to 5 pages)',
       'Mobile-First Responsive Design',
       'Basic SEO Setup',
       'Contact & Lead Capture Forms',
@@ -25,7 +25,7 @@ export const pricingTiers = [
     period: 'project',
     description: 'Built for growing businesses that need more functionality and visibility.',
     features: [
-      'Business Website (up to 5 pages)',
+      'Business Class Website (up to 10 pages)',
       'Content Management System (CMS)',
       'On-page SEO Optimization',
       'Contact, Lead & WhatsApp Integration',
@@ -64,15 +64,15 @@ export const comparisonFeatures = [
       features: [
         {
           name: 'Monthly Website Visitors',
-          launch: 'Up to 10,000',
-          scale: 'Up to 100,000',
-          enterprise: 'Unlimited',
+          launch: 'Up to 5,000',
+          scale: 'Up to 20,000',
+          enterprise: 'Up to 50,000',
         },
         {
           name: 'Number of Pages',
           launch: 'Up to 5 pages',
-          scale: 'Up to 20 pages',
-          enterprise: 'Unlimited',
+          scale: 'Up to 10 pages',
+          enterprise: 'Custom',
         },
         {
           name: 'Custom Domain',

@@ -114,7 +114,7 @@ export default function BookingClient() {
           />
 
           {/* Back Link */}
-          <div className="mt-8 lg:mt-12 text-center">
+          <div className="mt-8 lg:mt-12 mb-8 text-center">
             <Link
               href="/"
               className="inline-flex items-center gap-2 text-text-tertiary hover:text-white transition-colors text-sm font-medium"
