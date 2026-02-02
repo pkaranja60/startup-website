@@ -12,22 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-interface Booking {
-	id: string;
-	client_name: string;
-	client_email: string;
-	client_phone?: string;
-	client_company?: string;
-	booking_date: string;
-	booking_time: string;
-	project_type?: string;
-	project_budget?: string;
-	notes?: string;
-	google_meet_link?: string;
-	status: "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
-	confirmation_sent_at?: string;
-	created_at: string;
-}
+import { Booking } from "@/types/booking";
 
 interface BookingsTableProps {
 	bookings: Booking[];
@@ -36,11 +21,11 @@ interface BookingsTableProps {
 }
 
 const STATUS_COLORS = {
-	pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30",
+	pending: "bg-yellow-500/10 text-yellow-600 border-yellow-500/30",
 	confirmed: "bg-primary/10 text-primary border-primary/30",
-	completed: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-	cancelled: "bg-red-500/10 text-red-400 border-red-500/30",
-	no_show: "bg-gray-500/10 text-gray-400 border-gray-500/30",
+	completed: "bg-blue-500/10 text-blue-600 border-blue-500/30",
+	cancelled: "bg-red-500/10 text-red-600 border-red-500/30",
+	no_show: "bg-gray-500/10 text-gray-600 border-gray-500/30",
 };
 
 // Status priority for sorting
@@ -94,15 +79,15 @@ export default function BookingsTable({
 			{/* Table */}
 			<div className="overflow-x-auto">
 				<table className="w-full">
-					<thead className="bg-white/5 border-b-2 border-primary/20">
+					<thead className="bg-muted/50 border-b-2 border-primary/20">
 						<tr>
-							<th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								#
 							</th>
-							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								Client Details
 							</th>
-							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								<button
 									onClick={() =>
 										setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
@@ -113,13 +98,13 @@ export default function BookingsTable({
 									<ArrowUpDown size={14} />
 								</button>
 							</th>
-							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								Project Info
 							</th>
-							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								Status
 							</th>
-							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-secondary">
+							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
 								Actions
 							</th>
 						</tr>
@@ -137,7 +122,7 @@ export default function BookingsTable({
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									transition={{ delay: index * 0.05 }}
-									className={`hover:bg-white/2 transition-all ${
+									className={`hover:bg-muted/50 transition-all ${
 										isUpcoming ? "bg-primary/5" : ""
 									}`}
 								>
@@ -246,17 +231,20 @@ export default function BookingsTable({
 
 			{/* Pagination */}
 			{totalPages > 1 && (
-				<div className="px-6 py-4 border-t border-border-subtle bg-white/2">
+				<div className="px-6 py-4 border-t border-border-subtle bg-muted/30">
 					<div className="flex items-center justify-between">
 						{/* Results Info */}
 						<div className="text-sm text-text-tertiary">
 							Showing{" "}
-							<span className="font-bold text-white">{startIndex + 1}</span> to{" "}
-							<span className="font-bold text-white">
+							<span className="font-bold text-foreground">
+								{startIndex + 1}
+							</span>{" "}
+							to{" "}
+							<span className="font-bold text-foreground">
 								{Math.min(endIndex, sortedBookings.length)}
 							</span>{" "}
 							of{" "}
-							<span className="font-bold text-white">
+							<span className="font-bold text-foreground">
 								{sortedBookings.length}
 							</span>{" "}
 							bookings
@@ -267,14 +255,14 @@ export default function BookingsTable({
 							<button
 								onClick={() => goToPage(1)}
 								disabled={currentPage === 1}
-								className="p-2 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
+								className="p-2 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
 							>
 								<ChevronsLeft size={18} />
 							</button>
 							<button
 								onClick={() => goToPage(currentPage - 1)}
 								disabled={currentPage === 1}
-								className="p-2 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
+								className="p-2 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
 							>
 								<ChevronLeft size={18} />
 							</button>
@@ -300,7 +288,7 @@ export default function BookingsTable({
 											className={`w-10 h-10 rounded-xl font-bold transition-all ${
 												currentPage === pageNum
 													? "bg-primary text-background"
-													: "bg-white/5 hover:bg-white/10 border border-border-subtle"
+													: "bg-muted hover:bg-muted/80 border border-border-subtle"
 											}`}
 										>
 											{pageNum}
@@ -312,14 +300,14 @@ export default function BookingsTable({
 							<button
 								onClick={() => goToPage(currentPage + 1)}
 								disabled={currentPage === totalPages}
-								className="p-2 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
+								className="p-2 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
 							>
 								<ChevronRight size={18} />
 							</button>
 							<button
 								onClick={() => goToPage(totalPages)}
 								disabled={currentPage === totalPages}
-								className="p-2 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
+								className="p-2 rounded-xl bg-muted hover:bg-muted/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-border-subtle"
 							>
 								<ChevronsRight size={18} />
 							</button>

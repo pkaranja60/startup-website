@@ -26,13 +26,14 @@ export function SelectField({
 				<SelectValue placeholder={placeholder} />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectGroup>
+				<SelectGroup >
 					{options.map((opt) => (
 						<SelectItem key={opt} value={opt}>
 							{opt}
 						</SelectItem>
 					))}
 				</SelectGroup>
+				
 			</SelectContent>
 		</Select>
 	);

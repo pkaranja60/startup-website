@@ -1,115 +1,134 @@
 // app/api/bookings/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+
+import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
+import { sendClientConfirmationEmail, sendFollowUpEmail } from "@/lib/email";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+	process.env.NEXT_PUBLIC_SUPABASE_URL!,
+	process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 // PATCH - Update booking status
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
-    const { status, admin_notes, cancellation_reason } = body;
+	try {
+		const { id } = await params;
+		const body = await request.json();
+		const { status, admin_notes, cancellation_reason } = body;
 
-    const updateData: any = {
-      updated_at: new Date().toISOString()
-    };
+		const updateData: any = {
+			updated_at: new Date().toISOString(),
+		};
 
-    if (status) {
-      updateData.status = status;
-      
-      if (status === 'cancelled') {
-        updateData.cancelled_at = new Date().toISOString();
-        if (cancellation_reason) {
-          updateData.cancellation_reason = cancellation_reason;
-        }
-      }
-    }
+		if (status) {
+			updateData.status = status;
 
-    if (admin_notes !== undefined) {
-      updateData.admin_notes = admin_notes;
-    }
+			if (status === "cancelled") {
+				updateData.cancelled_at = new Date().toISOString();
+				if (cancellation_reason) {
+					updateData.cancellation_reason = cancellation_reason;
+				}
+			}
+		}
 
-    const { data, error } = await supabase
-      .from('discovery_bookings')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
+		if (admin_notes !== undefined) {
+			updateData.admin_notes = admin_notes;
+		}
 
-    if (error) {
-      console.error('Update error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+		// Perform the update
+		const { data, error } = await supabase
+			.from("discovery_bookings")
+			.update(updateData)
+			.eq("id", id)
+			.select()
+			.single();
 
-    return NextResponse.json({ success: true, booking: data });
+		if (error) {
+			console.error("Update error:", error);
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		}
 
-  } catch (error: any) {
-    console.error('PATCH error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to update booking' },
-      { status: 500 }
-    );
-  }
+		// 📧 Handle Email Notifications
+		try {
+			// If status changed to 'confirmed', send confirmation with Meet link
+			if (status === "confirmed") {
+				await sendClientConfirmationEmail(
+					data,
+					data.google_meet_link || "https://meet.google.com",
+				);
+			}
+
+			// If status changed to 'completed', send follow-up
+			if (status === "completed") {
+				await sendFollowUpEmail(data);
+			}
+		} catch (emailError) {
+			console.error("Failed to send status update email:", emailError);
+			// Do not fail the request; just log the email error
+		}
+
+		return NextResponse.json({ success: true, booking: data });
+	} catch (error: any) {
+		console.error("PATCH error:", error);
+		return NextResponse.json(
+			{ error: error.message || "Failed to update booking" },
+			{ status: 500 },
+		);
+	}
 }
 
 // GET - Get single booking
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const { id } = await params;
 
-    const { data, error } = await supabase
-      .from('discovery_bookings')
-      .select('*')
-      .eq('id', id)
-      .single();
+		const { data, error } = await supabase
+			.from("discovery_bookings")
+			.select("*")
+			.eq("id", id)
+			.single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 404 });
-    }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 404 });
+		}
 
-    return NextResponse.json({ booking: data });
-
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch booking' },
-      { status: 500 }
-    );
-  }
+		return NextResponse.json({ booking: data });
+	} catch (error: any) {
+		return NextResponse.json(
+			{ error: error.message || "Failed to fetch booking" },
+			{ status: 500 },
+		);
+	}
 }
 
 // DELETE - Delete booking (admin only)
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const { id } = await params;
 
-    const { error } = await supabase
-      .from('discovery_bookings')
-      .delete()
-      .eq('id', id);
+		const { error } = await supabase
+			.from("discovery_bookings")
+			.delete()
+			.eq("id", id);
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		}
 
-    return NextResponse.json({ success: true, message: 'Booking deleted' });
-
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to delete booking' },
-      { status: 500 }
-    );
-  }
+		return NextResponse.json({ success: true, message: "Booking deleted" });
+	} catch (error: any) {
+		return NextResponse.json(
+			{ error: error.message || "Failed to delete booking" },
+			{ status: 500 },
+		);
+	}
 }

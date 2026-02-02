@@ -151,9 +151,9 @@ export function BookingForm({
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel>Project Type</FieldLabel>
-								<div className="relative">
-									<Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary z-10" />
-									<div className="pl-8">
+								<div className="relative flex items-center">
+									<Briefcase className="absolute left-3 text-text-tertiary z-10" />
+									<div className="pl-10 py-2 w-full">
 										<SelectField
 											value={field.value}
 											onChange={field.onChange}

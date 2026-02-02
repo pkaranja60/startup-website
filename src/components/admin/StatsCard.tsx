@@ -23,7 +23,7 @@ interface StatsCardsProps {
 		upcoming: number;
 		thisWeek: number;
 		thisMonth: number;
-		avgPerDay: number;
+		avgPerDay: string | number;
 	};
 }
 
@@ -44,7 +44,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 			icon: Clock,
 			color: "yellow-400",
 			bgColor: "bg-yellow-400/10",
-			textColor: "text-yellow-400",
+			textColor: "text-yellow-600",
 			urgent: stats.pending > 5,
 		},
 		{
@@ -53,7 +53,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 			icon: CheckCircle,
 			color: "green-400",
 			bgColor: "bg-green-400/10",
-			textColor: "text-green-400",
+			textColor: "text-green-600",
 		},
 		{
 			label: "Upcoming",
@@ -61,7 +61,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 			icon: TrendingUp,
 			color: "blue-400",
 			bgColor: "bg-blue-400/10",
-			textColor: "text-blue-400",
+			textColor: "text-blue-600",
 		},
 		{
 			label: "Completed",
@@ -69,7 +69,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 			icon: Target,
 			color: "purple-400",
 			bgColor: "bg-purple-400/10",
-			textColor: "text-purple-400",
+			textColor: "text-purple-600",
 		},
 		{
 			label: "This Week",
@@ -77,7 +77,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 			icon: Activity,
 			color: "cyan-400",
 			bgColor: "bg-cyan-400/10",
-			textColor: "text-cyan-400",
+			textColor: "text-cyan-600",
 		},
 	];
 
@@ -102,12 +102,12 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 							<card.icon size={20} className={card.textColor} />
 						</div>
 						{card.trend && (
-							<span className="text-xs text-green-400 font-bold">
+							<span className="text-xs text-green-600 font-bold">
 								{card.trend}
 							</span>
 						)}
 					</div>
-					<p className="text-xs text-text-tertiary mb-1 uppercase tracking-wider font-bold">
+					<p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-bold">
 						{card.label}
 					</p>
 					<p className={`text-3xl font-display font-bold ${card.textColor}`}>

@@ -1,174 +1,38 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Settings as SettingsIcon } from "lucide-react";
+import {
+	ArrowRight,
+	Calendar as CalendarIcon,
+	Clock,
+	User,
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Toaster, toast } from "sonner";
-import Navbar from "@/components/common/Navbar";
-import Footer from "@/components/common/Footer";
+import { toast } from "sonner";
+import DashboardCalendar from "@/components/admin/DashboardCalendar";
 import StatsCards from "@/components/admin/StatsCard";
-import MetricsPanel from "@/components/admin/MetricsPanels";
-import BookingsFilters from "@/components/admin/BookingsFilters";
-import BookingsTable from "@/components/admin/BookingsTable";
-import BookingDetailModal from "@/components/admin/BookingDetailModal";
-import SettingsPanel from "@/components/admin/SettingsPanel";
-
-
-interface Booking {
-	id: string;
-	client_name: string;
-	client_email: string;
-	client_phone?: string;
-	client_company?: string;
-	booking_date: string;
-	booking_time: string;
-	project_type?: string;
-	project_budget?: string;
-	notes?: string;
-	google_meet_link?: string;
-	status: "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
-	confirmation_sent_at?: string;
-	created_at: string;
-	admin_notes?: string;
-}
+import { Booking } from "@/types/booking";
 
 export default function AdminDashboard() {
 	const [bookings, setBookings] = useState<Booking[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [selectedStatus, setSelectedStatus] = useState<string>("all");
-	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-	const [showSettings, setShowSettings] = useState(false);
 
 	useEffect(() => {
+		const fetchBookings = async () => {
+			try {
+				const response = await fetch("/api/bookings");
+				const data = await response.json();
+				if (data.bookings) setBookings(data.bookings);
+			} catch (error) {
+				toast.error("Failed to load dashboard data");
+			} finally {
+				setLoading(false);
+			}
+		};
 		fetchBookings();
-	}, [selectedStatus]);
+	}, []);
 
-	const fetchBookings = async () => {
-		setLoading(true);
-		try {
-			const url =
-				selectedStatus === "all"
-					? "/api/bookings"
-					: `/api/bookings?status=${selectedStatus}`;
-
-			const response = await fetch(url);
-			const data = await response.json();
-
-			if (data.bookings) {
-				setBookings(data.bookings);
-			}
-		} catch (error) {
-			console.error("Failed to fetch bookings:", error);
-			toast.error("Failed to load bookings", {
-				description: "Please refresh the page",
-			});
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const updateBookingStatus = async (bookingId: string, newStatus: string) => {
-		try {
-			const response = await fetch(`/api/bookings/${bookingId}`, {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ status: newStatus }),
-			});
-
-			if (response.ok) {
-				await fetchBookings();
-				setSelectedBooking(null);
-
-				// Send automatic completion email if status is completed
-				if (newStatus === "completed") {
-					await sendEmail(bookingId, "completion");
-				}
-			} else {
-				throw new Error("Failed to update status");
-			}
-		} catch (error) {
-			console.error("Failed to update status:", error);
-			throw error;
-		}
-	};
-
-	const sendEmail = async (
-		bookingId: string,
-		type: "approval" | "completion",
-	) => {
-		try {
-			const response = await fetch(`/api/bookings/${bookingId}/email`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ type }),
-			});
-
-			if (!response.ok) {
-				throw new Error("Failed to send email");
-			}
-		} catch (error) {
-			console.error("Failed to send email:", error);
-			throw error;
-		}
-	};
-
-	const exportToCSV = () => {
-		const headers = [
-			"#",
-			"Date",
-			"Time",
-			"Name",
-			"Email",
-			"Phone",
-			"Company",
-			"Project Type",
-			"Budget",
-			"Status",
-			"Notes",
-		];
-		const rows = filteredBookings.map((b, i) => [
-			i + 1,
-			b.booking_date,
-			b.booking_time,
-			b.client_name,
-			b.client_email,
-			b.client_phone || "",
-			b.client_company || "",
-			b.project_type || "",
-			b.project_budget || "",
-			b.status,
-			b.notes || "",
-		]);
-
-		const csv = [
-			headers.join(","),
-			...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-		].join("\n");
-
-		const blob = new Blob([csv], { type: "text/csv" });
-		const url = window.URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `bookings-${new Date().toISOString().split("T")[0]}.csv`;
-		a.click();
-
-		toast.success("Export complete", {
-			description: "Bookings exported to CSV",
-		});
-	};
-
-	// Filter bookings
-	const filteredBookings = bookings.filter((booking) => {
-		const matchesSearch =
-			booking.client_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			booking.client_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			booking.client_company?.toLowerCase().includes(searchQuery.toLowerCase());
-
-		return matchesSearch;
-	});
-
-	// Calculate stats
+	// Stats calculation
 	const now = new Date();
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -207,88 +71,120 @@ export default function AdminDashboard() {
 				: 0,
 	};
 
-	return (
-		<>
-		
-			<Toaster position="top-right" richColors closeButton theme="dark" />
+	const upcomingBookings = bookings
+		.filter(
+			(b) =>
+				new Date(b.booking_date) >= today &&
+				["pending", "confirmed"].includes(b.status),
+		)
+		.sort(
+			(a, b) =>
+				new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime(),
+		)
+		.slice(0, 5);
 
-			<div className="min-h-screen pt-32 pb-20 px-4 sm:px-6">
-				<div className="container-max max-w-[1400px] mx-auto">
-					{/* Header */}
-					<div className="flex items-center justify-between mb-12">
-						<div>
-							<h1 className="text-4xl lg:text-5xl font-display font-bold mb-2">
-								Admin Dashboard
-							</h1>
-							<p className="text-text-secondary">
-								Manage and track all discovery session bookings
-							</p>
-						</div>
-						<button
-							onClick={() => setShowSettings(true)}
-							className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl border border-border-subtle transition-all font-medium"
-						>
-							<SettingsIcon size={20} />
-							Settings
-						</button>
+	return (
+		<div className="p-4 sm:p-8">
+			<div className="container mx-auto max-w-7xl">
+				{/* Header */}
+				<div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+					<div>
+						<h1 className="text-3xl lg:text-4xl font-display font-bold mb-2">
+							Dashboard
+						</h1>
+						<p className="text-muted-foreground">
+							Overview of your startup&apos;s performance
+						</p>
+					</div>
+					<div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 px-4 py-2 rounded-lg">
+						<Clock size={16} />
+						<span>
+							Last updated:{" "}
+							{new Date().toLocaleTimeString("en-US", {
+								hour: "2-digit",
+								minute: "2-digit",
+							})}
+						</span>
+					</div>
+				</div>
+
+				{/* Stats Cards */}
+				<StatsCards stats={stats} />
+
+				{/* Main Content Grid */}
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+					{/* Calendar - Takes 2 columns on large screens */}
+					<div className="lg:col-span-2">
+						<DashboardCalendar bookings={bookings} />
 					</div>
 
-					{/* Stats Cards */}
-					<StatsCards stats={stats} />
+					{/* Right Column - Upcoming Sessions */}
+					<div className="space-y-8">
+						<div className="bg-card h-full border border-border rounded-2xl p-6">
+							<div className="flex items-center justify-between mb-6">
+								<h2 className="text-xl font-display font-bold">
+									Upcoming Sessions
+								</h2>
+								<Link
+									href="/admin/bookings"
+									className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 transition-colors"
+								>
+									View All <ArrowRight size={14} />
+								</Link>
+							</div>
 
-					{/* Metrics Panel */}
-					<MetricsPanel bookings={bookings} />
-
-					{/* Filters */}
-					<BookingsFilters
-						searchQuery={searchQuery}
-						selectedStatus={selectedStatus}
-						onSearchChange={setSearchQuery}
-						onStatusChange={setSelectedStatus}
-						onExport={exportToCSV}
-						onRefresh={fetchBookings}
-					/>
-
-					{/* Bookings Table */}
-					{loading ? (
-						<div className="glass-card rounded-3xl p-20 text-center">
-							<div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-							<p className="text-text-tertiary">Loading bookings...</p>
+							<div className="space-y-3">
+								{loading ? (
+									<div className="flex justify-center p-8">
+										<div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+									</div>
+								) : upcomingBookings.length === 0 ? (
+									<p className="text-center py-8 text-sm text-muted-foreground">
+										No upcoming sessions
+									</p>
+								) : (
+									upcomingBookings.map((booking) => (
+										<div
+											key={booking.id}
+											className="p-4 rounded-xl border border-border hover:bg-muted/30 transition-all"
+										>
+											<div className="flex items-start gap-3 mb-3">
+												<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+													<User size={18} />
+												</div>
+												<div className="flex-1 min-w-0">
+													<p className="font-medium text-sm mb-1 truncate">
+														{booking.client_name}
+													</p>
+													<p className="text-xs text-muted-foreground">
+														{booking.project_type || "Consultation"}
+													</p>
+												</div>
+											</div>
+											<div className="flex items-center gap-4 text-xs text-muted-foreground">
+												<span className="flex items-center gap-1">
+													<CalendarIcon size={12} />
+													{new Date(booking.booking_date).toLocaleDateString(
+														"en-US",
+														{
+															month: "short",
+															day: "numeric",
+														},
+													)}
+												</span>
+												<span className="flex items-center gap-1">
+													<Clock size={12} />
+													{booking.booking_time}
+												</span>
+											</div>
+										</div>
+									))
+								)}
+							</div>
 						</div>
-					) : filteredBookings.length === 0 ? (
-						<div className="glass-card rounded-3xl p-20 text-center">
-							<p className="text-text-tertiary text-lg mb-2">
-								No bookings found
-							</p>
-							<p className="text-sm text-text-tertiary">
-								{searchQuery
-									? "Try adjusting your search"
-									: "New bookings will appear here"}
-							</p>
-						</div>
-					) : (
-						<BookingsTable
-							bookings={filteredBookings}
-							onViewDetails={setSelectedBooking}
-							itemsPerPage={15}
-						/>
-					)}
+					</div>
 				</div>
 			</div>
-
-			{/* Modals */}
-			{selectedBooking && (
-				<BookingDetailModal
-					booking={selectedBooking}
-					onClose={() => setSelectedBooking(null)}
-					onUpdateStatus={updateBookingStatus}
-					onSendEmail={sendEmail}
-				/>
-			)}
-
-			{showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
-
-		
-		</>
+		</div>
 	);
 }

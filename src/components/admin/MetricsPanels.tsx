@@ -9,9 +9,10 @@ import {
 	TrendingDown,
 	TrendingUp,
 } from "lucide-react";
+import { Booking } from "@/types/booking";
 
 interface MetricsPanelProps {
-	bookings: any[];
+	bookings: Booking[];
 }
 
 export default function MetricsPanel({ bookings }: MetricsPanelProps) {
@@ -19,11 +20,6 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 	const now = new Date();
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-	const monthAgo = new Date(
-		today.getFullYear(),
-		today.getMonth() - 1,
-		today.getDate(),
-	);
 
 	const metrics = {
 		totalRevenue: bookings
@@ -129,7 +125,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			label: "Completion Rate",
 			value: `${metrics.completionRate}%`,
 			icon: BarChart3,
-			color: "text-green-400",
+			color: "text-green-600",
 			bg: "bg-green-400/10",
 			trend: "+5%",
 			trendUp: true,
@@ -138,7 +134,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			label: "Weekly Growth",
 			value: `${weekGrowth}%`,
 			icon: TrendingUp,
-			color: Number(weekGrowth) >= 0 ? "text-green-400" : "text-red-400",
+			color: Number(weekGrowth) >= 0 ? "text-green-600" : "text-red-600",
 			bg: Number(weekGrowth) >= 0 ? "bg-green-400/10" : "bg-red-400/10",
 			trend: `${metrics.thisWeekBookings} this week`,
 			trendUp: Number(weekGrowth) >= 0,
@@ -148,7 +144,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			value: `${metrics.noShowRate}%`,
 			icon: TrendingDown,
 			color:
-				Number(metrics.noShowRate) > 10 ? "text-red-400" : "text-green-400",
+				Number(metrics.noShowRate) > 10 ? "text-red-600" : "text-green-600",
 			bg: Number(metrics.noShowRate) > 10 ? "bg-red-400/10" : "bg-green-400/10",
 			trend: "Target: <5%",
 			trendUp: Number(metrics.noShowRate) < 5,
@@ -157,7 +153,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			label: "Avg Response Time",
 			value: metrics.avgResponseTime,
 			icon: Clock,
-			color: "text-blue-400",
+			color: "text-blue-600",
 			bg: "bg-blue-400/10",
 			trend: "Last 7 days",
 			trendUp: true,
@@ -166,7 +162,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			label: "Popular Service",
 			value: metrics.popularProjectType,
 			icon: PieChart,
-			color: "text-purple-400",
+			color: "text-purple-600",
 			bg: "bg-purple-400/10",
 			trend: "Most requested",
 			trendUp: true,
@@ -175,7 +171,7 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 			label: "Upcoming Sessions",
 			value: metrics.upcomingThisWeek,
 			icon: Calendar,
-			color: "text-cyan-400",
+			color: "text-cyan-600",
 			bg: "bg-cyan-400/10",
 			trend: "This week",
 			trendUp: true,
@@ -184,21 +180,18 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 
 	return (
 		<div className="mb-8">
-			<div className="flex items-center justify-between mb-6">
+			<div className="mb-6">
 				<h2 className="text-2xl font-display font-bold">Performance Metrics</h2>
-				<button className="text-sm text-text-tertiary hover:text-primary transition-colors">
-					View Detailed Analytics →
-				</button>
 			</div>
 
-			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
 				{metricCards.map((metric, i) => (
 					<motion.div
 						key={metric.label}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: i * 0.05 }}
-						className="glass-card p-5 rounded-2xl border border-border-subtle hover:border-primary/30 transition-all"
+						className="glass-card p-3 rounded-2xl border border-border-subtle hover:border-primary/30 transition-all"
 					>
 						<div className="flex items-start justify-between mb-3">
 							<div
@@ -207,14 +200,14 @@ export default function MetricsPanel({ bookings }: MetricsPanelProps) {
 								<metric.icon size={20} className={metric.color} />
 							</div>
 							{metric.trendUp ? (
-								<TrendingUp size={16} className="text-green-400" />
+								<TrendingUp size={16} className="text-green-600" />
 							) : (
-								<TrendingDown size={16} className="text-red-400" />
+								<TrendingDown size={16} className="text-red-600" />
 							)}
 						</div>
 
 						<p
-							className={`text-2xl font-display font-bold mb-1 ${metric.color}`}
+							className={`text-sm md:text-2xl font-display font-bold mb-1 ${metric.color}`}
 						>
 							{metric.value}
 						</p>

@@ -1,24 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-	Settings,
-	Moon,
-	Sun,
-	Monitor,
-	Bell,
-	Mail,
-	User,
-	Shield,
-	Database,
-	LogOut,
 	Activity,
+	Bell,
 	Clock,
+	Database,
 	Globe,
+	LogOut,
+	Mail,
+	Monitor,
+	Moon,
 	Palette,
+	Settings,
+	Shield,
+	Sun,
+	User,
 	Zap,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface SettingsPanelProps {
@@ -58,14 +58,14 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 			<motion.div
 				initial={{ opacity: 0, scale: 0.95 }}
 				animate={{ opacity: 1, scale: 1 }}
-				className="glass-card rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border-2 border-primary/20"
+				className="glass-card rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border-2 border-primary/20 bg-card"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Header */}
-				<div className="relative bg-gradient-to-br from-primary/20 to-accent/20 p-8 border-b border-border-subtle">
+				<div className="relative bg-linear-to-br from-primary/20 to-accent/20 p-8 border-b border-border-subtle">
 					<button
 						onClick={onClose}
-						className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+						className="absolute top-6 right-6 w-10 h-10 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-all"
 					>
 						✕
 					</button>
@@ -113,7 +113,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 												className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all ${
 													theme === option.value
 														? "bg-primary text-background"
-														: "bg-white/5 hover:bg-white/10"
+														: "bg-muted hover:bg-muted/80"
 												}`}
 											>
 												<option.icon size={18} />
@@ -170,7 +170,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 									<button
 										onClick={() => setEmailNotifications(!emailNotifications)}
 										className={`w-12 h-6 rounded-full transition-all ${
-											emailNotifications ? "bg-primary" : "bg-white/10"
+											emailNotifications ? "bg-primary" : "bg-muted"
 										}`}
 									>
 										<div
@@ -194,7 +194,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 									<button
 										onClick={() => setPushNotifications(!pushNotifications)}
 										className={`w-12 h-6 rounded-full transition-all ${
-											pushNotifications ? "bg-primary" : "bg-white/10"
+											pushNotifications ? "bg-primary" : "bg-muted"
 										}`}
 									>
 										<div
@@ -227,7 +227,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 								<button
 									onClick={() => setAutoApprove(!autoApprove)}
 									className={`w-12 h-6 rounded-full transition-all ${
-										autoApprove ? "bg-primary" : "bg-white/10"
+										autoApprove ? "bg-primary" : "bg-muted"
 									}`}
 								>
 									<div
@@ -307,10 +307,10 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 				</div>
 
 				{/* Footer */}
-				<div className="border-t border-border-subtle p-6 bg-white/2 flex justify-end gap-3">
+				<div className="border-t border-border-subtle p-6 bg-muted/30 flex justify-end gap-3">
 					<button
 						onClick={onClose}
-						className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-all border border-border-subtle"
+						className="px-6 py-3 bg-muted hover:bg-muted/80 rounded-xl font-bold transition-all border border-border-subtle"
 					>
 						Cancel
 					</button>
