@@ -19,7 +19,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 			<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 			<body suppressHydrationWarning>
 				<ThemeProvider attribute="class" defaultTheme="system">
-					<Toaster richColors position="top-center" />
+					<Toaster richColors position="top-center" closeButton theme="dark" />
 					{children}
 				</ThemeProvider>
 			</body>
