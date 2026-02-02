@@ -1,131 +1,162 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { ArrowLeft, Sparkles } from 'lucide-react';
-import { useState } from 'react';
-import Link from 'next/link';
-import BookingConfirmation from '@/components/booking/BookingConfirmation';
-import DateSelector from '@/components/booking/DateSelector';
-import TimeSelector from '@/components/booking/TimeSelector';
-import ConfirmButton from '@/components/booking/ConfirmButton';
+import { motion } from "framer-motion";
+import { useState } from "react";
 
+import BookingConfirmation from "../booking/BookingConfirmation";
+import { BookingForm } from "../booking/BookingForm";
+import DateSelector from "../booking/DateSelector";
+import TimeSelector from "../booking/TimeSelector";
+
+import { BookingFormValues } from "@/lib/bookingSchema";
+
+const TIME_SLOTS = [
+	"9:00 AM",
+	"10:00 AM",
+	"11:00 AM",
+	"12:00 PM",
+	"1:00 PM",
+	"2:00 PM",
+	"3:00 PM",
+	"4:00 PM",
+	"5:00 PM",
+];
 
 export default function BookingClient() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [selectedTime, setSelectedTime] = useState<string | null>(null);
+	const [isConfirmed, setIsConfirmed] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [bookingData, setBookingData] = useState<any>(null);
 
-  const timeSlots = [
-    '09:00 AM', '10:00 AM', '11:00 AM',
-    '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'
-  ];
+	const handleConfirm = async (data: BookingFormValues) => {
+		if (!selectedDate || !selectedTime) {
+			setError("Please select a date and time.");
+			return;
+		}
 
-  const handleSelectDate = (date: Date) => {
-    setSelectedDate(date);
-    setSelectedTime(null); // Reset time when date changes
-  };
+		setIsSubmitting(true);
+		setError(null);
 
-  const handleSelectTime = (time: string) => {
-    setSelectedTime(time);
-  };
+		try {
+			const payload = {
+				client_name: data.client_name.trim(),
+				client_email: data.client_email.trim().toLowerCase(),
+				client_phone: data.client_phone || null,
+				client_company: data.client_company || null,
+				booking_date: selectedDate.toISOString().split("T")[0],
+				booking_time: selectedTime,
+				project_type: data.project_type || null,
+				notes: data.notes || null,
+			};
 
-  const handleConfirm = () => {
-    if (selectedDate && selectedTime) {
-      setIsConfirmed(true);
-      // Here you would typically send the booking data to your backend
-    }
-  };
+			const response = await fetch("/api/bookings", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(payload),
+			});
 
-  const handleBookAnother = () => {
-    setIsConfirmed(false);
-    setSelectedDate(null);
-    setSelectedTime(null);
-  };
+			const result = await response.json();
 
-  // Success State
-  if (isConfirmed && selectedDate && selectedTime) {
-    return (
-      <>
+			if (!response.ok) {
+				throw new Error(result.error || "Failed to book session");
+			}
 
-        <main className="max-h-screen pt-24 sm:pt-28 pb-10 lg:pt-32 px-4 sm:px-6">
-          <BookingConfirmation
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            onBookAnother={handleBookAnother}
-          />
-        </main>
-      </>
-    );
-  }
+			setBookingData(result.booking);
+			setIsConfirmed(true);
 
-  // Booking Form
-  return (
-    <>
-      <main className="min-h-screen pt-24 sm:pt-28 lg:pt-32 px-4 sm:px-6">
-        <div className="container-max">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12 lg:mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-4 lg:mb-6">
-              <Sparkles size={16} className="text-primary" />
-              <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">
-                Book a Call
-              </span>
-            </div>
+			// Optional analytics
+			if (typeof window !== "undefined" && (window as any).gtag) {
+				(window as any).gtag("event", "booking_completed", {
+					event_category: "Booking",
+					event_label: data.project_type,
+					value: 1,
+				});
+			}
+		} catch (err: any) {
+			console.error("Booking error:", err);
+			setError(
+				err.message ||
+					"Something went wrong. Please try again or contact us directly.",
+			);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 lg:mb-6 tracking-tight px-4">
-              Book a <span className="text-primary-gradient">Discovery</span> Call
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed px-4">
-              Let's talk about your vision. Select a convenient time for a 1-on-1 consultation.
-            </p>
-          </motion.div>
+	const resetBooking = () => {
+		setIsConfirmed(false);
+		setBookingData(null);
+		setSelectedDate(null);
+		setSelectedTime(null);
+	};
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start max-w-7xl mx-auto">
-            {/* Date Selection - Takes more space on large screens */}
-            <div className="lg:col-span-7 xl:col-span-8">
-              <DateSelector
-                selectedDate={selectedDate}
-                onSelectDate={handleSelectDate}
-              />
-            </div>
 
-            {/* Time Selection - Sticky on large screens */}
-            <div className="lg:col-span-5 xl:col-span-4">
-              <TimeSelector
-                selectedDate={selectedDate}
-                selectedTime={selectedTime}
-                onSelectTime={handleSelectTime}
-                timeSlots={timeSlots}
-              />
-            </div>
-          </div>
+	if (isConfirmed && bookingData) {
+		return (
+			<BookingConfirmation
+				bookingData={bookingData}
+				onBookAnother={resetBooking}
+			/>
+		);
+	}
 
-          {/* Confirm Button */}
-          <ConfirmButton
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            onConfirm={handleConfirm}
-          />
+	return (
+		<div className="min-h-screen pt-32 pb-20 px-4 sm:px-6">
+			<div className="container-max max-w-7xl mx-auto">
+				{/* Header */}
+				<motion.div
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					className="text-center mb-12 lg:mb-16"
+				>
+					<h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-6">
+						Book Your{" "}
+						<span className="text-primary-gradient">Discovery Session</span>
+					</h1>
+					<p className="text-lg text-text-secondary max-w-3xl mx-auto leading-relaxed">
+						Let's discuss your project and explore how we can bring your vision
+						to life. Choose a convenient time for a free 60-minute consultation.
+					</p>
+				</motion.div>
 
-          {/* Back Link */}
-          <div className="mt-8 lg:mt-12 mb-8 text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-text-tertiary hover:text-white transition-colors text-sm font-medium"
-            >
-              <ArrowLeft size={16} />
-              Back to explore
-            </Link>
-          </div>
-        </div>
-      </main>
+				{/* Error Alert */}
+				{error && (
+					<motion.div
+						initial={{ opacity: 0, y: -10 }}
+						animate={{ opacity: 1, y: 0 }}
+						className="max-w-2xl mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"
+					>
+						⚠️ {error}
+					</motion.div>
+				)}
 
-    </>
-  );
+				{/* Date + Time */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+					<DateSelector
+						selectedDate={selectedDate}
+						onSelectDate={setSelectedDate}
+					/>
+
+					<TimeSelector
+						selectedDate={selectedDate}
+						selectedTime={selectedTime}
+						onSelectTime={setSelectedTime}
+						timeSlots={TIME_SLOTS}
+					/>
+				</div>
+
+				{/* Booking Form */}
+				<BookingForm
+					selectedDate={selectedDate}
+					selectedTime={selectedTime}
+					isSubmitting={isSubmitting}
+					onConfirm={handleConfirm}
+				/>
+			</div>
+		</div>
+	);
 }

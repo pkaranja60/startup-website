@@ -169,7 +169,7 @@ export default function Navbar() {
             </div>
 
             {/* Conditional Book Link */}
-            {pathname === '/blog' ? (
+            {pathname === '/case-studies' || pathname === '/blog' ? (
               <Link
                 href="/book"
                 className="bg-primary hover:bg-primary-hover text-background px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-lg shadow-primary/30 hover:shadow-primary/50"

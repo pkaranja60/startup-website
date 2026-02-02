@@ -251,9 +251,6 @@
 		}
 	],
 	"css": {
-    "parser": {
-      "allowTailwindDirectives": true
-    },
     "linter": {
       "enabled": true
     }

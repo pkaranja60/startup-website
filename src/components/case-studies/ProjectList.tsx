@@ -70,7 +70,7 @@ export default function ProjectList({ projects, itemsPerPage = 6 }: ProjectListP
             placeholder="Search case studies..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-full bg-white/5 border border-border-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+            className="w-full pl-12 pr-4 py-3 rounded-full bg-white/5 border border-border-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm "
           />
         </div>
 
