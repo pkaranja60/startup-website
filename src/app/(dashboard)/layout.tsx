@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import ThemeInitializer from "@/components/admin/ThemeInitializer";
@@ -12,17 +13,29 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const pathname = usePathname();
+
+	const isLoginPage = pathname === "/admin/login";
+
+	if (isLoginPage) {
+		return (
+			<div className="min-h-screen bg-background">
+				<ThemeInitializer />
+				<main>{children}</main>
+			</div>
+		);
+	}
 
 	return (
 		<div className="min-h-screen bg-muted/20">
 			<ThemeInitializer />
 			{/* Desktop Sidebar */}
-			<AdminSidebar className="hidden lg:flex fixed left-0 top-0 h-screen w-80" />
+			<AdminSidebar className="hidden lg:flex fixed left-0 top-0 h-screen w-64" />
 
 			{/* Mobile Header */}
 			<header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-30 flex items-center justify-between px-4">
 				<Link href="/" className="text-lg font-display font-bold">
-					Nexus<span className="text-primary">Tech</span>
+					DrD<span className="text-primary">Solutions</span>
 				</Link>
 				<button
 					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

@@ -37,9 +37,18 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 		onClose();
 	};
 
-	const handleLogout = () => {
-		toast.success("Logged out successfully");
-		// Add your logout logic here
+	const handleLogout = async () => {
+		try {
+			const response = await fetch("/api/auth/logout", { method: "POST" });
+			if (response.ok) {
+				toast.success("Logged out successfully");
+				window.location.href = "/admin/login";
+			} else {
+				toast.error("Logout failed");
+			}
+		} catch (error) {
+			toast.error("An error occurred during logout");
+		}
 	};
 
 	const accentColors = [

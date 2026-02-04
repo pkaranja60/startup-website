@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface AdminSidebarProps {
 	className?: string;
@@ -21,33 +23,42 @@ export default function AdminSidebar({
 	onNavigate,
 }: AdminSidebarProps) {
 	const pathname = usePathname();
+	const [adminUser, setAdminUser] = useState<{ name: string; email: string } | null>(null);
+
+	useEffect(() => {
+		// Parse admin_user cookie
+		const cookies = document.cookie.split('; ');
+		const adminCookie = cookies.find(row => row.startsWith('admin_user='));
+		if (adminCookie) {
+			try {
+				const userData = JSON.parse(decodeURIComponent(adminCookie.split('=')[1]));
+				setAdminUser(userData);
+			} catch (e) {
+				console.error("Failed to parse admin user cookie", e);
+			}
+		}
+	}, []);
+
+	const handleLogout = async () => {
+		try {
+			const response = await fetch("/api/auth/logout", { method: "POST" });
+			if (response.ok) {
+				toast.success("Logged out successfully");
+				window.location.href = "/admin/login";
+			} else {
+				toast.error("Logout failed");
+			}
+		} catch (error) {
+			toast.error("An error occurred during logout");
+		}
+	};
 
 	const links = [
-		{
-			label: "Dashboard",
-			href: "/admin",
-			icon: LayoutDashboard,
-		},
-		{
-			label: "Bookings",
-			href: "/admin/bookings",
-			icon: Calendar,
-		},
-		{
-			label: "Clients",
-			href: "/admin/clients",
-			icon: Users,
-		},
-		{
-			label: "Analytics",
-			href: "/admin/analytics",
-			icon: BarChart3,
-		},
-		{
-			label: "Settings",
-			href: "/admin/settings",
-			icon: Settings,
-		},
+		{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+		{ label: "Bookings", href: "/admin/bookings", icon: Calendar },
+		{ label: "Clients", href: "/admin/clients", icon: Users },
+		{ label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+		{ label: "Settings", href: "/admin/settings", icon: Settings },
 	];
 
 	return (
@@ -84,20 +95,26 @@ export default function AdminSidebar({
 			</nav>
 
 			{/* Footer User Profile */}
-			<div className="p-4 border-t border-border mt-auto">
-				<div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 mb-3">
-					<div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-						AD
+			<div className="p-4 border-t border-border mt-auto space-y-3">
+				<div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
+					<div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">
+						{adminUser?.name?.charAt(0) || "A"}
 					</div>
 					<div className="overflow-hidden">
-						<p className="text-sm font-bold truncate">Admin User</p>
+						<p className="text-sm font-bold truncate">
+							{adminUser?.name || "Admin User"}
+						</p>
 						<p className="text-xs text-muted-foreground truncate">
-							admin@drdsolutions.com
+							{adminUser?.email || "admin@drdsolutions.com"}
 						</p>
 					</div>
 				</div>
-				<button className="w-full flex items-center justify-start gap-2 p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors text-sm font-bold">
-					<LogOut size={16} />
+
+				<button 
+					onClick={handleLogout}
+					className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-400/10 rounded-xl transition-all group"
+				>
+					<LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
 					Logout
 				</button>
 			</div>
