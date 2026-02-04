@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
 	generateGoogleMeetLink,
 	sendAdminNotificationEmail,
-	sendClientConfirmationEmail,
+	sendBookingReceiptEmail,
 } from "@/lib/email";
 
 // Initialize Supabase client
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 		// Send emails asynchronously
 		try {
 			await Promise.all([
-				sendClientConfirmationEmail(
+				sendBookingReceiptEmail(
 					{ ...booking, google_meet_link: meetLink },
 					meetLink,
 				),
