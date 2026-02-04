@@ -46,7 +46,8 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 			} else {
 				toast.error("Logout failed");
 			}
-		} catch (error) {
+		} catch (error: unknown) {
+			console.error("Logout error:", error);
 			toast.error("An error occurred during logout");
 		}
 	};
@@ -118,7 +119,9 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 										].map((option) => (
 											<button
 												key={option.value}
-												onClick={() => setTheme(option.value as any)}
+												onClick={() =>
+													setTheme(option.value as "light" | "dark" | "system")
+												}
 												className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all ${
 													theme === option.value
 														? "bg-primary text-background"

@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Loader2, Shield } from "lucide-react";
+import { ArrowRight, Loader2, Lock, Mail, Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-
 
 export default function AdminLoginPage() {
 	const router = useRouter();
 
-	
 	const [email, setEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [step, setStep] = useState<"email" | "otp">("email");
@@ -38,7 +36,8 @@ export default function AdminLoginPage() {
 				description: "Check your email for the 6-digit verification code.",
 			});
 			setStep("otp");
-		} catch (error: any) {
+		} catch (error: unknown) {
+			console.error("Error sending OTP:", error);
 			toast.error("Something went wrong");
 		} finally {
 			setLoading(false);
@@ -53,9 +52,9 @@ export default function AdminLoginPage() {
 			const response = await fetch("/api/auth/verify-otp", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ 
+				body: JSON.stringify({
 					email: email.toLowerCase().trim(),
-					otp: otp.trim() 
+					otp: otp.trim(),
 				}),
 			});
 
@@ -72,7 +71,8 @@ export default function AdminLoginPage() {
 
 			router.push("/admin");
 			router.refresh();
-		} catch (error: any) {
+		} catch (error: unknown) {
+			console.error("Error verifying OTP:", error);
 			toast.error("Verification failed");
 		} finally {
 			setLoading(false);
@@ -96,7 +96,8 @@ export default function AdminLoginPage() {
 			toast.success("Code resent!", {
 				description: "A new code has been sent to your email.",
 			});
-		} catch (error) {
+		} catch (error: unknown) {
+			console.error("Error resending OTP:", error);
 			toast.error("Failed to resend code");
 		} finally {
 			setLoading(false);
@@ -195,7 +196,9 @@ export default function AdminLoginPage() {
 										type="text"
 										value={otp}
 										onChange={(e) => {
-											const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+											const value = e.target.value
+												.replace(/\D/g, "")
+												.slice(0, 6);
 											setOtp(value);
 										}}
 										placeholder="000000"

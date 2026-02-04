@@ -130,7 +130,8 @@ export default function BookingConfirmation({
 							{bookingData.meeting_link}
 						</code>
 						<p className="text-xs text-text-tertiary mt-3">
-							This link has been sent to your email
+							Once your booking is confirmed, we'll send this link to your
+							email.
 						</p>
 					</motion.div>
 
