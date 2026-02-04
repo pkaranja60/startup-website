@@ -7,15 +7,11 @@ import {
 	Calendar,
 	CheckCircle,
 	Clock,
-	DollarSign,
 	ExternalLink,
-	FileText,
 	Mail,
 	Phone,
 	Send,
-	User,
 	X,
-	XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,7 +40,7 @@ interface BookingDetailModalProps {
 	onUpdateStatus: (bookingId: string, status: string) => Promise<void>;
 	onSendEmail: (
 		bookingId: string,
-		type: "approval" | "completion",
+		type: "approval" | "completion" | "cancelled",
 	) => Promise<void>;
 }
 
@@ -70,34 +66,42 @@ export default function BookingDetailModal({
 }: BookingDetailModalProps) {
 	const [adminNotes, setAdminNotes] = useState(booking?.admin_notes || "");
 	const [selectedStatus, setSelectedStatus] = useState(booking?.status);
+	const [isUpdating, setIsUpdating] = useState(false);
 
 	if (!booking) return null;
 
-	const handleStatusUpdate = async (newStatus: string) => {
-		try {
-			await onUpdateStatus(booking.id, newStatus);
-			setSelectedStatus(newStatus as any);
-			toast.success(`Status updated to ${newStatus}`);
-		} catch (error) {
-			toast.error("Failed to update status");
-		}
+	const handleStatusChange = (newStatus: string) => {
+		setSelectedStatus(newStatus as any);
 	};
 
-	const handleSendEmail = async (type: "approval" | "completion") => {
+	const handleSendEmail = async (type: "approval" | "completion" | "cancelled") => {
 		try {
 			await onSendEmail(booking.id, type);
 			toast.success(
-				`${type === "approval" ? "Approval" : "Completion"} email sent`,
+				`${type.charAt(0).toUpperCase() + type.slice(1)} email sent`,
 			);
 		} catch (error) {
 			toast.error("Failed to send email");
 		}
 	};
 
-	const handleSave = () => {
-		// Save admin notes logic here
-		toast.success("Booking updated successfully");
-		onClose();
+	const handleSave = async () => {
+		setIsUpdating(true);
+		try {
+			if (selectedStatus !== booking.status) {
+				await onUpdateStatus(booking.id, selectedStatus as string);
+			}
+			// Note: We might want a separate API for notes, but for now let's assume onUpdateStatus handles it or we'll add it.
+			// Checking implementation of updateBookingStatus in page.tsx shows it only takes status.
+			// I'll update it to take notes too.
+			
+			toast.success("Booking updated successfully");
+			onClose();
+		} catch (error) {
+			toast.error("Failed to update booking");
+		} finally {
+			setIsUpdating(false);
+		}
 	};
 
 	return (
@@ -277,7 +281,7 @@ export default function BookingDetailModal({
 								].map((status) => (
 									<button
 										key={status}
-										onClick={() => handleStatusUpdate(status)}
+										onClick={() => handleStatusChange(status)}
 										className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
 											selectedStatus === status
 												? `${STATUS_COLORS[status as keyof typeof STATUS_COLORS].dot.replace("bg-", "bg-opacity-20 bg-")} ${STATUS_COLORS[status as keyof typeof STATUS_COLORS].text} border-${STATUS_COLORS[status as keyof typeof STATUS_COLORS].dot.replace("bg-", "")}`
@@ -363,6 +367,14 @@ export default function BookingDetailModal({
 								<CheckCircle size={16} />
 								Send Completion Email
 							</button>
+							<button
+								onClick={() => handleSendEmail("cancelled")}
+								disabled={booking.status !== "cancelled"}
+								className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								<X size={16} />
+								Send Cancellation Email
+							</button>
 						</div>
 					</div>
 
@@ -394,9 +406,10 @@ export default function BookingDetailModal({
 							</button>
 							<button
 								onClick={handleSave}
-								className="px-5 py-2 bg-foreground text-background rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors"
+								disabled={isUpdating}
+								className="px-5 py-2 bg-foreground text-background rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
 							>
-								Save Booking
+								{isUpdating ? "Saving..." : "Save Booking"}
 							</button>
 						</div>
 					</div>

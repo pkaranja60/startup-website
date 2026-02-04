@@ -1,6 +1,7 @@
 // app/api/bookings/[id]/email/route.ts
-import { NextRequest, NextResponse } from "next/server";
+
 import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 const supabase = createClient(
@@ -18,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendApprovalEmail(booking: any) {
 	const mailOptions = {
-		from: `"NexusTech" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
 		to: booking.client_email,
 		subject: "✅ Your Discovery Session is Confirmed!",
 		html: `
@@ -56,13 +57,13 @@ async function sendApprovalEmail(booking: any) {
               <p><strong>Time:</strong> ${booking.booking_time} EAT</p>
               <p><strong>Duration:</strong> 60 minutes</p>
             </div>
-
+ 
             <div style="text-align: center; margin: 30px 0;">
               <a href="${booking.google_meet_link}" class="meet-button">
                 🎥 Join Google Meet
               </a>
             </div>
-
+ 
             <h3>What's Next?</h3>
             <ul>
               <li>Add the session to your calendar (attachment included)</li>
@@ -70,12 +71,12 @@ async function sendApprovalEmail(booking: any) {
               <li>Test your camera and microphone before the session</li>
               <li>Join 5 minutes early to ensure everything works smoothly</li>
             </ul>
-
+ 
             <p>If you need to reschedule or have any questions, please reply to this email.</p>
           </div>
-
+ 
           <div class="footer">
-            <p><strong>NexusTech</strong> | Transforming Ideas into Reality</p>
+            <p><strong>DrD Solutions</strong> | Transforming Ideas into Reality</p>
             <p>Westlands, Nairobi, Kenya</p>
           </div>
         </div>
@@ -89,7 +90,7 @@ async function sendApprovalEmail(booking: any) {
 
 async function sendCompletionEmail(booking: any) {
 	const mailOptions = {
-		from: `"NexusTech" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
 		to: booking.client_email,
 		subject: "🎯 Thank You for Your Discovery Session",
 		html: `
@@ -117,7 +118,7 @@ async function sendCompletionEmail(booking: any) {
             <p>Hi <strong>${booking.client_name}</strong>,</p>
             
             <p>Thank you for taking the time to discuss your project with us. It was great learning about your vision and goals!</p>
-
+ 
             <div class="highlight-box">
               <h3 style="margin-top: 0;">📋 Next Steps</h3>
               <p>Our team is now reviewing everything we discussed. You can expect to receive:</p>
@@ -128,7 +129,7 @@ async function sendCompletionEmail(booking: any) {
                 <li>Technology recommendations</li>
               </ul>
             </div>
-
+ 
             <h3>📝 Quick Feedback</h3>
             <p>Your feedback helps us improve. How was your experience?</p>
             
@@ -137,25 +138,85 @@ async function sendCompletionEmail(booking: any) {
                 Share Your Feedback
               </a>
             </div>
-
+ 
             <h3>📞 Questions?</h3>
             <p>Feel free to reach out anytime:</p>
             <ul>
-              <li>Email: <a href="mailto:hello@nexustech.com">hello@nexustech.com</a></li>
+              <li>Email: <a href="mailto:hello@drdsolutions.com">hello@drdsolutions.com</a></li>
               <li>Phone: +254 712 345 678</li>
             </ul>
-
+ 
             <p>We're excited about the possibility of working together!</p>
           </div>
-
+ 
           <div class="footer">
-            <p><strong>NexusTech</strong> | Transforming Ideas into Reality</p>
+            <p><strong>DrD Solutions</strong> | Transforming Ideas into Reality</p>
             <p>Westlands, Nairobi, Kenya</p>
             <p style="font-size: 12px; margin-top: 10px;">
               <a href="#" style="color: #00ff9d; text-decoration: none;">Website</a> | 
               <a href="#" style="color: #00ff9d; text-decoration: none;">Portfolio</a> | 
               <a href="#" style="color: #00ff9d; text-decoration: none;">Contact</a>
             </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+	};
+
+	return transporter.sendMail(mailOptions);
+}
+
+async function sendCancellationEmail(booking: any) {
+	const mailOptions = {
+		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
+		to: booking.client_email,
+		subject: "🚫 Update Regarding Your Discovery Session",
+		html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #ef4444; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .header h1 { color: #ffffff; margin: 0; font-size: 28px; }
+          .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; }
+          .detail-box { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444; }
+          .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280; border-radius: 0 0 12px 12px; }
+          .cta-button { display: inline-block; background: #00ff9d; color: #0a0f14; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Session Cancelled</h1>
+          </div>
+          
+          <div class="content">
+            <p>Hi <strong>${booking.client_name}</strong>,</p>
+            
+            <p>We're writing to inform you that your discovery session scheduled for <strong>${new Date(booking.booking_date).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</strong> has been cancelled.</p>
+            
+            <div class="detail-box">
+              <h3 style="margin-top: 0; color: #111827;">📅 Cancelled Session</h3>
+              <p><strong>Time:</strong> ${booking.booking_time} EAT</p>
+            </div>
+ 
+            <p>If you'd like to reschedule, you can book a new session through our website at your convenience.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/booking" class="cta-button">
+                Book a New Session
+              </a>
+            </div>
+ 
+            <p>If you have any questions or if this was done in error, please feel free to reply to this email.</p>
+          </div>
+ 
+          <div class="footer">
+            <p><strong>DrD Solutions</strong> | Transforming Ideas into Reality</p>
+            <p>Westlands, Nairobi, Kenya</p>
           </div>
         </div>
       </body>
@@ -190,6 +251,8 @@ export async function POST(
 			await sendApprovalEmail(booking);
 		} else if (type === "completion") {
 			await sendCompletionEmail(booking);
+		} else if (type === "cancelled") {
+			await sendCancellationEmail(booking);
 		} else {
 			return NextResponse.json(
 				{ error: "Invalid email type" },

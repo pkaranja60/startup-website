@@ -53,10 +53,6 @@ export default function BookingsPage() {
 				setSelectedBooking(
 					(prev) => (prev ? { ...prev, status: newStatus } : null) as Booking,
 				);
-
-				if (newStatus === "completed") {
-					await sendEmail(bookingId, "completion");
-				}
 			} else {
 				throw new Error("Failed to update status");
 			}
@@ -68,7 +64,7 @@ export default function BookingsPage() {
 
 	const sendEmail = async (
 		bookingId: string,
-		type: "approval" | "completion",
+		type: "approval" | "completion" | "cancelled",
 	) => {
 		try {
 			const response = await fetch(`/api/bookings/${bookingId}/email`, {

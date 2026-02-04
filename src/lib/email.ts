@@ -25,13 +25,13 @@ async function createCalendarEvent(bookingData: any, meetLink: string) {
 
 	const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//NexusTech//Discovery Session//EN
+PRODID:-//DrD Solutions//Discovery Session//EN
 BEGIN:VEVENT
-UID:${bookingData.id}@nexustech.com
+UID:${bookingData.id}@drdsolutions.com
 DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
 DTSTART:${startDateTime.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
 DTEND:${endDateTime.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-SUMMARY:Discovery Session with NexusTech - ${bookingData.client_name}
+SUMMARY:Discovery Session with DrD Solutions - ${bookingData.client_name}
 DESCRIPTION:Project Type: ${bookingData.project_type || "Not specified"}\\nBudget: ${bookingData.project_budget || "Not specified"}\\n\\nGoogle Meet: ${meetLink}\\n\\nNotes: ${bookingData.notes || "None"}
 LOCATION:${meetLink}
 STATUS:CONFIRMED
@@ -54,9 +54,9 @@ export async function sendClientConfirmationEmail(
 	const calendarAttachment = await createCalendarEvent(bookingData, meetLink);
 
 	const mailOptions = {
-		from: `"NexusTech" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
 		to: bookingData.client_email,
-		subject: "✅ Discovery Session Confirmed - NexusTech",
+		subject: "✅ Discovery Session Confirmed - DrD Solutions",
 		html: `
       <!DOCTYPE html>
       <html>
@@ -87,7 +87,7 @@ export async function sendClientConfirmationEmail(
           <div class="content">
             <p>Hi <strong>${bookingData.client_name}</strong>,</p>
             
-            <p>Thank you for booking a discovery session with NexusTech! We're excited to learn about your project and discuss how we can help bring your vision to life.</p>
+            <p>Thank you for booking a discovery session with DrD Solutions! We're excited to learn about your project and discuss how we can help bring your vision to life.</p>
             
             <div class="detail-box">
               <h3 style="margin-top: 0; color: #111827;">📅 Session Details</h3>
@@ -148,15 +148,15 @@ export async function sendClientConfirmationEmail(
             </ul>
 
             <h3>Need to Reschedule?</h3>
-            <p>If you need to change your appointment, please reply to this email or contact us at <a href="mailto:hello@nexustech.com">hello@nexustech.com</a></p>
+            <p>If you need to change your appointment, please reply to this email or contact us at <a href="mailto:hello@drdsolutions.com">hello@drdsolutions.com</a></p>
           </div>
 
           <div class="footer">
-            <p><strong>NexusTech</strong> | Transforming Ideas into Reality</p>
+            <p><strong>DrD Solutions</strong> | Transforming Ideas into Reality</p>
             <p>Westlands, Nairobi, Kenya | +254 712 345 678</p>
             <p style="font-size: 12px; margin-top: 10px;">
-              <a href="https://nexustech.com" style="color: #00ff9d; text-decoration: none;">Website</a> | 
-              <a href="https://nexustech.com/privacy" style="color: #00ff9d; text-decoration: none;">Privacy Policy</a>
+              <a href="https://drdsolutions.com" style="color: #00ff9d; text-decoration: none;">Website</a> | 
+              <a href="https://drdsolutions.com/privacy" style="color: #00ff9d; text-decoration: none;">Privacy Policy</a>
             </p>
           </div>
         </div>
@@ -178,7 +178,7 @@ export async function sendClientConfirmationEmail(
 
 export async function sendAdminNotificationEmail(bookingData: any) {
 	const mailOptions = {
-		from: `"NexusTech Bookings" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions Bookings" <${process.env.EMAIL_USER}>`,
 		to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
 		subject: `🔔 New Discovery Session Booked - ${bookingData.client_name}`,
 		html: `
@@ -262,9 +262,9 @@ export async function sendAdminNotificationEmail(bookingData: any) {
 
 export async function sendFollowUpEmail(bookingData: any) {
 	const mailOptions = {
-		from: `"NexusTech" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
 		to: bookingData.client_email,
-		subject: "🚀 Thank you for meeting with NexusTech",
+		subject: "🚀 Thank you for meeting with DrD Solutions",
 		html: `
       <!DOCTYPE html>
       <html>
@@ -298,12 +298,12 @@ export async function sendFollowUpEmail(bookingData: any) {
             <p>We look forward to the possibility of working together!</p>
 
             <div style="text-align: center;">
-              <a href="mailto:hello@nexustech.com" class="cta-button">Contact Us</a>
+              <a href="mailto:hello@drdsolutions.com" class="cta-button">Contact Us</a>
             </div>
           </div>
 
           <div class="footer">
-            <p><strong>NexusTech</strong> | Transforming Ideas into Reality</p>
+            <p><strong>DrD Solutions</strong> | Transforming Ideas into Reality</p>
           </div>
         </div>
       </body>

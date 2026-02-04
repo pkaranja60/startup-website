@@ -48,7 +48,7 @@ export default function AppearanceSettings() {
 			<div>
 				<h1 className="text-2xl font-bold mb-2">Appearance</h1>
 				<p className="text-muted-foreground text-sm">
-					Customize how NexusTech looks for you
+					Customize how DrD Solutions looks for you
 				</p>
 			</div>
 

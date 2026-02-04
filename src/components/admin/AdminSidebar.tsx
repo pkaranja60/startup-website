@@ -92,7 +92,7 @@ export default function AdminSidebar({
 					<div className="overflow-hidden">
 						<p className="text-sm font-bold truncate">Admin User</p>
 						<p className="text-xs text-muted-foreground truncate">
-							admin@nexustech.com
+							admin@drdsolutions.com
 						</p>
 					</div>
 				</div>

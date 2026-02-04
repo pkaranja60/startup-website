@@ -51,24 +51,6 @@ export async function PATCH(
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
-		// 📧 Handle Email Notifications
-		try {
-			// If status changed to 'confirmed', send confirmation with Meet link
-			if (status === "confirmed") {
-				await sendClientConfirmationEmail(
-					data,
-					data.google_meet_link || "https://meet.google.com",
-				);
-			}
-
-			// If status changed to 'completed', send follow-up
-			if (status === "completed") {
-				await sendFollowUpEmail(data);
-			}
-		} catch (emailError) {
-			console.error("Failed to send status update email:", emailError);
-			// Do not fail the request; just log the email error
-		}
 
 		return NextResponse.json({ success: true, booking: data });
 	} catch (error: any) {

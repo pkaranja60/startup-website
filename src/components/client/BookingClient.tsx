@@ -45,7 +45,7 @@ export default function BookingClient() {
 				client_email: data.client_email.trim().toLowerCase(),
 				client_phone: data.client_phone || null,
 				client_company: data.client_company || null,
-				booking_date: selectedDate.toISOString().split("T")[0],
+				booking_date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`,
 				booking_time: selectedTime,
 				project_type: data.project_type || null,
 				notes: data.notes || null,

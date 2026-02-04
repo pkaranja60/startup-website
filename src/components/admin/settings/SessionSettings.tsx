@@ -32,7 +32,7 @@ export default function SessionSettings() {
 					<div className="grid grid-cols-2 gap-4 text-sm">
 						<div>
 							<p className="text-muted-foreground mb-1">User</p>
-							<p className="font-medium">admin@nexustech.com</p>
+							<p className="font-medium">admin@drdsolutions.com</p>
 						</div>
 						<div>
 							<p className="text-muted-foreground mb-1">Started</p>

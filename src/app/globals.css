@@ -364,6 +364,6 @@ html {
    ACCESSIBILITY
    ========================================================= */
 *:focus-visible {
-    outline: 2px solid var(--color-ring);
+    /* outline: 2px solid var(--color-ring); */
     outline-offset: 2px;
 }

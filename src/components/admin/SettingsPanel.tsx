@@ -252,7 +252,9 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 										<User size={18} className="text-primary" />
 										<span className="text-sm">Current User</span>
 									</div>
-									<span className="text-sm font-bold">admin@nexustech.com</span>
+									<span className="text-sm font-bold">
+										admin@drdsolutions.com
+									</span>
 								</div>
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-3">
