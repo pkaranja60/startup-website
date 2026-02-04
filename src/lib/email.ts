@@ -1,4 +1,17 @@
+"use server";
+
 import nodemailer from "nodemailer";
+import { google } from "googleapis";
+
+// Google Calendar API Setup
+const SCOPES = ["https://www.googleapis.com/auth/calendar"];
+const auth = new google.auth.JWT({
+	email: process.env.GOOGLE_CLIENT_EMAIL,
+	key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+	scopes: SCOPES,
+});
+
+const calendar = google.calendar({ version: "v3", auth });
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
@@ -9,11 +22,94 @@ const transporter = nodemailer.createTransport({
 	},
 });
 
+
 export async function generateGoogleMeetLink(
 	bookingData: any,
 ): Promise<string> {
-	// In a real app, integrate with Google Calendar API
-	return `https://meet.google.com/${Math.random().toString(36).substring(7)}`;
+	try {
+        // Parse booking date and time (assuming YYYY-MM-DD and HH:MM AM/PM)
+        const [time, period] = bookingData.booking_time.split(" ");
+        const [hours, minutes] = time.split(":").map(Number);
+        let hour24 = hours;
+        if (period === "PM" && hours !== 12) hour24 += 12;
+        if (period === "AM" && hours === 12) hour24 = 0;
+
+        const startDateTime = new Date(`${bookingData.booking_date}T${String(hour24).padStart(2, '0')}:${String(minutes || 0).padStart(2, '0')}:00`);
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+		console.log("Creating Calendar Event:", {
+			start: startDateTime.toISOString(),
+			end: endDateTime.toISOString(),
+			requestId: `meet-${Date.now()}-${(bookingData.id || "manual").slice(0, 8)}`
+		});
+
+		let eventResponse;
+		try {
+			eventResponse = await calendar.events.insert({
+				calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
+				conferenceDataVersion: 1,
+				requestBody: {
+					summary: `Discovery Session with ${bookingData.client_name}`,
+					description: `Discovery session regarding: ${bookingData.project_type || "Not specified"}\n\nNotes: ${bookingData.notes || "None"}`,
+					start: {
+						dateTime: startDateTime.toISOString(),
+						timeZone: "Africa/Nairobi",
+					},
+					end: {
+						dateTime: endDateTime.toISOString(),
+						timeZone: "Africa/Nairobi",
+					},
+					conferenceData: {
+						createRequest: {
+							requestId: `meet-${Date.now()}-${(bookingData.id || "manual").slice(0, 8)}`,
+							conferenceSolutionKey: {
+								type: "hangoutsMeet",
+							},
+						},
+					},
+				},
+			});
+		} catch (insertError: any) {
+			console.warn("First attempt with conference data failed, retrying without it...");
+			// If it failed with 400 or unauthorized, try creating the event WITHOUT the meet link
+			// but including our fallback link in the location and description.
+			const manualLink = `https://meet.google.com/discovery-${(bookingData.id || "manual").slice(0, 8)}`;
+			
+			eventResponse = await calendar.events.insert({
+				calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
+				requestBody: {
+					summary: `Discovery Session with ${bookingData.client_name}`,
+					description: `Discovery session regarding: ${bookingData.project_type || "Not specified"}\n\nMeeting Link: ${manualLink}\n\nNotes: ${bookingData.notes || "None"}`,
+					location: manualLink,
+					start: {
+						dateTime: startDateTime.toISOString(),
+						timeZone: "Africa/Nairobi",
+					},
+					end: {
+						dateTime: endDateTime.toISOString(),
+						timeZone: "Africa/Nairobi",
+					},
+				},
+			});
+		}
+
+        const meetLink = eventResponse.data.conferenceData?.entryPoints?.[0]?.uri;
+        
+        if (!meetLink) {
+            console.warn("Failed to generate Google Meet link, falling back to static");
+            return `https://meet.google.com/discovery-${(bookingData.id || "manual").slice(0, 8)}`;
+        }
+
+        return meetLink;
+	} catch (error: any) {
+		console.error("Google Calendar Error Full Detail:", {
+			message: error.message,
+			details: error.response?.data?.error || error.response?.data,
+			status: error.status
+		});
+		// Return a fallback link instead of failing the whole process
+		return `https://meet.google.com/fallback-${(bookingData.id || "error").slice(0, 8)}`;
+	}
 }
 
 async function createCalendarEvent(bookingData: any, meetLink: string) {
@@ -279,4 +375,43 @@ export async function sendCancellationEmail(booking: any) {
 	};
 
 	return transporter.sendMail(mailOptions);
+}
+
+/**
+ * Syncs a booking to Google Calendar. 
+ * If the event doesn't exist, it creates it.
+ * Since we don't store event IDs, this actually creates a new event.
+ */
+export async function syncCalendarEvent(booking: any) {
+    try {
+        const [time, period] = booking.booking_time.split(" ");
+        const [hours, minutes] = time.split(":").map(Number);
+        let hour24 = hours;
+        if (period === "PM" && hours !== 12) hour24 += 12;
+        if (period === "AM" && hours === 12) hour24 = 0;
+
+        const startDateTime = new Date(`${booking.booking_date}T${String(hour24).padStart(2, '0')}:${String(minutes || 0).padStart(2, '0')}:00`);
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+
+        await calendar.events.insert({
+            calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
+            requestBody: {
+                summary: `Discovery Session with ${booking.client_name}`,
+                description: `Discovery session regarding: ${booking.project_type || "Not specified"}\n\nMeeting Link: ${booking.google_meet_link}\n\nNotes: ${booking.notes || "None"}\n\nAdmin Notes: ${booking.admin_notes || "None"}`,
+                location: booking.google_meet_link,
+                start: {
+                    dateTime: startDateTime.toISOString(),
+                    timeZone: "Africa/Nairobi",
+                },
+                end: {
+                    dateTime: endDateTime.toISOString(),
+                    timeZone: "Africa/Nairobi",
+                },
+            },
+        });
+        return true;
+    } catch (error) {
+        console.error("Failed to sync calendar event:", error);
+        return false;
+    }
 }

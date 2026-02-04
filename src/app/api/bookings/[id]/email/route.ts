@@ -6,7 +6,9 @@ import {
 	sendApprovalEmail,
 	sendCompletionEmail,
 	sendCancellationEmail,
+	generateGoogleMeetLink,
 } from "@/lib/email";
+import { isFallbackLink } from "@/lib/booking-utils";
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,7 +36,29 @@ export async function POST(
 
 		// Send appropriate email
 		if (type === "approval") {
-			await sendApprovalEmail(booking);
+			let finalBooking = booking;
+
+			// Check if link is a fallback and try to regenerate if so
+			if (isFallbackLink(booking.google_meet_link)) {
+				console.log("Detected fallback link for approval email, attempting regeneration...");
+				const newLink = await generateGoogleMeetLink(booking);
+				
+				if (!isFallbackLink(newLink)) {
+					const { data: updated } = await supabase
+						.from("discovery_bookings")
+						.update({ google_meet_link: newLink })
+						.eq("id", id)
+						.select()
+						.single();
+					
+					if (updated) {
+						finalBooking = updated;
+						console.log("Successfully regenerated and updated link for approval.");
+					}
+				}
+			}
+			
+			await sendApprovalEmail(finalBooking);
 		} else if (type === "completion") {
 			await sendCompletionEmail(booking);
 		} else if (type === "cancelled") {

@@ -40,12 +40,21 @@ export default function BookingsPage() {
 		}
 	};
 
-	const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+	const updateBookingStatus = async (
+		bookingId: string,
+		newStatus: string,
+		adminNotes?: string,
+		googleMeetLink?: string,
+	) => {
 		try {
 			const response = await fetch(`/api/bookings/${bookingId}`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ status: newStatus }),
+				body: JSON.stringify({ 
+					status: newStatus, 
+					admin_notes: adminNotes,
+					google_meet_link: googleMeetLink 
+				}),
 			});
 
 			if (response.ok) {

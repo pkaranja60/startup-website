@@ -1,5 +1,7 @@
 "use client";
 
+import { isFallbackLink } from "@/lib/booking-utils";
+
 import { AnimatePresence, motion } from "framer-motion";
 import {
 	Briefcase,
@@ -10,6 +12,7 @@ import {
 	ExternalLink,
 	Mail,
 	Phone,
+	RefreshCw,
 	Send,
 	X,
 } from "lucide-react";
@@ -37,7 +40,12 @@ interface Booking {
 interface BookingDetailModalProps {
 	booking: Booking | null;
 	onClose: () => void;
-	onUpdateStatus: (bookingId: string, status: string) => Promise<void>;
+	onUpdateStatus: (
+		bookingId: string,
+		status: string,
+		adminNotes?: string,
+		googleMeetLink?: string,
+	) => Promise<void>;
 	onSendEmail: (
 		bookingId: string,
 		type: "approval" | "completion" | "cancelled",
@@ -47,15 +55,15 @@ interface BookingDetailModalProps {
 const STATUS_COLORS = {
 	pending: {
 		dot: "bg-yellow-900",
-		text: "text-yellow-700 dark:text-yellow-400",
+		text: "text-yellow-400 dark:text-yellow-400",
 	},
 	confirmed: {
 		dot: "bg-green-900",
-		text: "text-green-700 dark:text-green-400",
+		text: "text-green-400 dark:text-green-400",
 	},
-	completed: { dot: "bg-blue-900", text: "text-blue-700 dark:text-blue-400" },
-	cancelled: { dot: "bg-red-900", text: "text-red-700 dark:text-red-400" },
-	no_show: { dot: "bg-gray-900", text: "text-gray-700 dark:text-gray-400" },
+	completed: { dot: "bg-blue-900", text: "text-blue-400 dark:text-blue-400" },
+	cancelled: { dot: "bg-red-900", text: "text-red-400 dark:text-red-400" },
+	no_show: { dot: "bg-gray-900", text: "text-gray-400 dark:text-gray-400" },
 };
 
 export default function BookingDetailModal({
@@ -66,7 +74,9 @@ export default function BookingDetailModal({
 }: BookingDetailModalProps) {
 	const [adminNotes, setAdminNotes] = useState(booking?.admin_notes || "");
 	const [selectedStatus, setSelectedStatus] = useState(booking?.status);
+	const [googleMeetLink, setGoogleMeetLink] = useState(booking?.google_meet_link || "");
 	const [isUpdating, setIsUpdating] = useState(false);
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	if (!booking) return null;
 
@@ -75,6 +85,15 @@ export default function BookingDetailModal({
 	};
 
 	const handleSendEmail = async (type: "approval" | "completion" | "cancelled") => {
+		if (hasUnsavedChanges) {
+			const proceed = confirm("You have unsaved changes. Save them before sending the email?");
+			if (proceed) {
+				await handleSave();
+			} else {
+				return;
+			}
+		}
+		
 		try {
 			await onSendEmail(booking.id, type);
 			toast.success(
@@ -88,15 +107,15 @@ export default function BookingDetailModal({
 	const handleSave = async () => {
 		setIsUpdating(true);
 		try {
-			if (selectedStatus !== booking.status) {
-				await onUpdateStatus(booking.id, selectedStatus as string);
-			}
-			// Note: We might want a separate API for notes, but for now let's assume onUpdateStatus handles it or we'll add it.
-			// Checking implementation of updateBookingStatus in page.tsx shows it only takes status.
-			// I'll update it to take notes too.
+			await onUpdateStatus(
+				booking.id,
+				selectedStatus as string,
+				adminNotes,
+				googleMeetLink,
+			);
 			
 			toast.success("Booking updated successfully");
-			onClose();
+			setHasUnsavedChanges(false);
 		} catch (error) {
 			toast.error("Failed to update booking");
 		} finally {
@@ -281,7 +300,10 @@ export default function BookingDetailModal({
 								].map((status) => (
 									<button
 										key={status}
-										onClick={() => handleStatusChange(status)}
+										onClick={() => {
+											handleStatusChange(status);
+											setHasUnsavedChanges(true);
+										}}
 										className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
 											selectedStatus === status
 												? `${STATUS_COLORS[status as keyof typeof STATUS_COLORS].dot.replace("bg-", "bg-opacity-20 bg-")} ${STATUS_COLORS[status as keyof typeof STATUS_COLORS].text} border-${STATUS_COLORS[status as keyof typeof STATUS_COLORS].dot.replace("bg-", "")}`
@@ -302,25 +324,57 @@ export default function BookingDetailModal({
 						</div>
 
 						{/* Google Meet Link */}
-						{booking.google_meet_link && (
+						{googleMeetLink && (
 							<div>
 								<label className="text-xs font-medium text-muted-foreground mb-2 block uppercase tracking-wider">
 									Meeting Link
 								</label>
 								<div className="relative">
+									<input
+										type="text"
+										value={googleMeetLink}
+										onChange={(e) => {
+											setGoogleMeetLink(e.target.value);
+											setHasUnsavedChanges(true);
+										}}
+										className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-muted border border-border text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-primary"
+									/>
 									<ExternalLink
 										size={16}
 										className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
 									/>
-									<a
-										href={booking.google_meet_link}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted border border-border text-sm block hover:bg-muted/80 transition-colors text-primary"
+									<button
+										onClick={async () => {
+											try {
+												setIsUpdating(true);
+												const res = await fetch(`/api/bookings/${booking.id}/regenerate-meet`, { method: "POST" });
+												if (res.ok) {
+													const data = await res.json();
+													toast.success("New link generated (not yet saved)");
+													setGoogleMeetLink(data.google_meet_link);
+													setHasUnsavedChanges(true);
+												} else {
+													const error = await res.json();
+													toast.error(error.error || "Failed to regenerate link");
+												}
+											} catch (e) {
+												toast.error("An error occurred");
+											} finally {
+												setIsUpdating(false);
+											}
+										}}
+										disabled={isUpdating}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+										title="Generate a new link"
 									>
-										{booking.google_meet_link}
-									</a>
+										<RefreshCw size={14} className={isUpdating ? "animate-spin" : ""} />
+									</button>
 								</div>
+								{isFallbackLink(googleMeetLink) && (
+									<p className="text-[10px] text-yellow-600 mt-1 flex items-center gap-1">
+										⚠️ Currently using a fallback link. Click refresh to try generating a real Google Meet link.
+									</p>
+								)}
 							</div>
 						)}
 
@@ -343,7 +397,10 @@ export default function BookingDetailModal({
 							</label>
 							<textarea
 								value={adminNotes}
-								onChange={(e) => setAdminNotes(e.target.value)}
+								onChange={(e) => {
+									setAdminNotes(e.target.value);
+									setHasUnsavedChanges(true);
+								}}
 								placeholder="Add any additional details or notes about this booking..."
 								className="w-full px-4 py-3 rounded-lg bg-muted border border-border text-sm resize-none h-24 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
 							/>
@@ -406,10 +463,10 @@ export default function BookingDetailModal({
 							</button>
 							<button
 								onClick={handleSave}
-								disabled={isUpdating}
+								disabled={isUpdating || !hasUnsavedChanges}
 								className="px-5 py-2 bg-foreground text-background rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
 							>
-								{isUpdating ? "Saving..." : "Save Booking"}
+								{isUpdating ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Saved"}
 							</button>
 						</div>
 					</div>

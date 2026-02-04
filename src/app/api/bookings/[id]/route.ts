@@ -37,6 +37,10 @@ export async function PATCH(
 			updateData.admin_notes = admin_notes;
 		}
 
+		if (body.google_meet_link !== undefined) {
+			updateData.google_meet_link = body.google_meet_link;
+		}
+
 		// Perform the update
 		const { data, error } = await supabase
 			.from("discovery_bookings")
@@ -50,6 +54,11 @@ export async function PATCH(
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		// Sync to Calendar if confirmed and has a link
+		if (data.status === "confirmed" && data.google_meet_link) {
+			const { syncCalendarEvent } = await import("@/lib/email");
+			await syncCalendarEvent(data);
+		}
 
 		return NextResponse.json({ success: true, booking: data });
 	} catch (error: any) {

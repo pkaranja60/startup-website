@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import {
+	ArrowDown,
+	ArrowUp,
 	ArrowUpDown,
 	Calendar,
 	ChevronLeft,
@@ -22,7 +24,7 @@ interface BookingsTableProps {
 
 const STATUS_COLORS = {
 	pending: "bg-yellow-500/10 text-yellow-600 border-yellow-500/30",
-	confirmed: "bg-primary/10 text-primary border-primary/30",
+	confirmed: "bg-green-500/10 text-green-600 border-green-500/30",
 	completed: "bg-blue-500/10 text-blue-600 border-blue-500/30",
 	cancelled: "bg-red-500/10 text-red-600 border-red-500/30",
 	no_show: "bg-gray-500/10 text-gray-600 border-gray-500/30",
@@ -45,23 +47,35 @@ export default function BookingsTable({
 	const [currentPage, setCurrentPage] = useState(1);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-	// Sort bookings: pending first (earliest to latest), then others, no_show last
-	const sortedBookings = [...bookings].sort((a, b) => {
-		// First sort by status priority
-		const statusDiff = STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status];
-		if (statusDiff !== 0) return statusDiff;
-
-		// Within same status, sort by date and time
-		const dateA = new Date(`${a.booking_date}T${a.booking_time}`);
-		const dateB = new Date(`${b.booking_date}T${b.booking_time}`);
-
-		// For pending, sort earliest first
-		if (a.status === "pending") {
-			return dateA.getTime() - dateB.getTime();
+	// Parse time like "9:00 AM" into 24h format for Date object
+	const parseDateTime = (dateStr: string, timeStr: string) => {
+		try {
+			const [time, period] = timeStr.split(" ");
+			const [hours, minutes] = time.split(":").map(Number);
+			let hour24 = hours;
+			if (period === "PM" && hours !== 12) hour24 += 12;
+			if (period === "AM" && hours === 12) hour24 = 0;
+			return new Date(
+				`${dateStr}T${String(hour24).padStart(2, "0")}:${String(minutes).padStart(
+					2,
+					"0",
+				)}:00`,
+			);
+		} catch (e) {
+			return new Date(dateStr);
 		}
+	};
 
-		// For others, most recent first
-		return dateB.getTime() - dateA.getTime();
+	// Sort bookings
+	const sortedBookings = [...bookings].sort((a, b) => {
+		const dateA = parseDateTime(a.booking_date, a.booking_time);
+		const dateB = parseDateTime(b.booking_date, b.booking_time);
+
+		if (sortDirection === "asc") {
+			return dateA.getTime() - dateB.getTime();
+		} else {
+			return dateB.getTime() - dateA.getTime();
+		}
 	});
 
 	// Pagination
@@ -95,7 +109,11 @@ export default function BookingsTable({
 									className="inline-flex items-center gap-2 hover:text-primary transition-colors"
 								>
 									Date & Time
-									<ArrowUpDown size={14} />
+									{sortDirection === "asc" ? (
+										<ArrowUp size={14} className="text-primary" />
+									) : (
+										<ArrowDown size={14} className="text-primary" />
+									)}
 								</button>
 							</th>
 							<th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">

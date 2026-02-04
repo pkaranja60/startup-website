@@ -81,7 +81,7 @@ export default function AdminDashboard() {
 			(a, b) =>
 				new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime(),
 		)
-		.slice(0, 5);
+		.slice(0, 10);
 
 	return (
 		<div className="p-4 sm:p-8">
@@ -112,15 +112,15 @@ export default function AdminDashboard() {
 				<StatsCards stats={stats} />
 
 				{/* Main Content Grid */}
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 h-full">
 					{/* Calendar - Takes 2 columns on large screens */}
-					<div className="lg:col-span-2">
+					<div className="lg:col-span-2 lg:h-[700px]">
 						<DashboardCalendar bookings={bookings} />
 					</div>
 
 					{/* Right Column - Upcoming Sessions */}
-					<div className="space-y-8">
-						<div className="bg-card h-full border border-border rounded-2xl p-6">
+					<div className="lg:h-[700px]">
+						<div className="bg-card h-full border border-border rounded-2xl p-6 overflow-hidden flex flex-col">
 							<div className="flex items-center justify-between mb-6">
 								<h2 className="text-xl font-display font-bold">
 									Upcoming Sessions
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
 								</Link>
 							</div>
 
-							<div className="space-y-3">
+							<div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
 								{loading ? (
 									<div className="flex justify-center p-8">
 										<div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
