@@ -1,4 +1,4 @@
-import { defineQuery } from 'next-sanity'
+import { defineQuery } from "next-sanity";
 
 // Blog Queries
 
@@ -14,10 +14,10 @@ export const POSTS_QUERY = defineQuery(`
   "excerpt": pt::text(body)[0...200],
   "categories": categories[]->{title, slug}
 }
-`)
+`);
 
-
-export const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0] {
+export const POST_QUERY =
+	defineQuery(`*[_type == "post" && slug.current == $slug][0] {
   _id,
   title,
   "slug": slug.current,
@@ -26,10 +26,11 @@ export const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slu
   publishedAt,
   body,
   categories[]->{title, slug}
-}`)
+}`);
 
 // Project Queries
-export const PROJECTS_QUERY = defineQuery(`*[_type == "project" && defined(slug.current)] | order(publishedAt desc) {
+export const PROJECTS_QUERY =
+	defineQuery(`*[_type == "project" && defined(slug.current)] | order(publishedAt desc) {
   _id,
   title,
   "slug": slug.current,
@@ -40,9 +41,24 @@ export const PROJECTS_QUERY = defineQuery(`*[_type == "project" && defined(slug.
   featured,
   publishedAt,
   "owner": owner->name
-}`)
+}`);
 
-export const PROJECT_QUERY = defineQuery(`*[_type == "project" && slug.current == $slug][0] {
+export const LATEST_PROJECTS_QUERY =
+	defineQuery(`*[_type == "project" && defined(slug.current)] | order(publishedAt desc)[0...3] {
+  _id,
+  title,
+  "slug": slug.current,
+  image,
+  description,
+  techStack,
+  liveLink,
+  featured,
+  publishedAt,
+  "owner": owner->name
+}`);
+
+export const PROJECT_QUERY =
+	defineQuery(`*[_type == "project" && slug.current == $slug][0] {
   _id,
   title,
   "slug": slug.current,
@@ -53,4 +69,4 @@ export const PROJECT_QUERY = defineQuery(`*[_type == "project" && slug.current =
   featured,
   publishedAt,
   "owner": owner->{name, image, bio}
-}`)
+}`);

@@ -36,9 +36,9 @@ export const rootMetadata: Metadata = {
     siteName: "DrD Solutions",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/drdsolutions.png",
         width: 1200,
-        height: 630,
+        height: 720,
         alt: "DrD Solutions - Digital Solutions Built for Growth"
       }
     ]
