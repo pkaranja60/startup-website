@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import ThemeInitializer from "@/components/admin/ThemeInitializer";
+import { AUTH_ROUTES } from "@/lib/auth";
 
 interface DashboardLayoutProps {
 	children: ReactNode;
@@ -15,7 +16,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const pathname = usePathname();
 
-	const isLoginPage = pathname === "/admin/login";
+	const isLoginPage = pathname === AUTH_ROUTES.LOGIN;
 
 	if (isLoginPage) {
 		return (

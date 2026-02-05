@@ -5,6 +5,7 @@ import { ArrowRight, Loader2, Lock, Mail, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AUTH_ROUTES, normalizeEmail, sendOTP, verifyOTP } from "@/lib/auth";
 
 export default function AdminLoginPage() {
 	const router = useRouter();
@@ -19,26 +20,17 @@ export default function AdminLoginPage() {
 		setLoading(true);
 
 		try {
-			const response = await fetch("/api/auth/send-otp", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email: email.toLowerCase().trim() }),
-			});
-
-			const data = await response.json();
-
-			if (!response.ok) {
-				toast.error(data.error || "Failed to send code");
-				return;
-			}
+			await sendOTP(normalizeEmail(email));
 
 			toast.success("Code sent!", {
 				description: "Check your email for the 6-digit verification code.",
 			});
+
 			setStep("otp");
 		} catch (error: unknown) {
-			console.error("Error sending OTP:", error);
-			toast.error("Something went wrong");
+			toast.error(
+				error instanceof Error ? error.message : "Something went wrong",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -49,31 +41,18 @@ export default function AdminLoginPage() {
 		setLoading(true);
 
 		try {
-			const response = await fetch("/api/auth/verify-otp", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					email: email.toLowerCase().trim(),
-					otp: otp.trim(),
-				}),
-			});
-
-			const data = await response.json();
-
-			if (!response.ok) {
-				toast.error(data.error || "Invalid code");
-				return;
-			}
+			await verifyOTP(normalizeEmail(email), otp.trim());
 
 			toast.success("Access granted!", {
 				description: "Redirecting to admin dashboard...",
 			});
 
-			router.push("/admin");
+			router.push(AUTH_ROUTES.DASHBOARD);
 			router.refresh();
 		} catch (error: unknown) {
-			console.error("Error verifying OTP:", error);
-			toast.error("Verification failed");
+			toast.error(
+				error instanceof Error ? error.message : "Verification failed",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -81,24 +60,17 @@ export default function AdminLoginPage() {
 
 	const handleResendOTP = async () => {
 		setLoading(true);
-		try {
-			const response = await fetch("/api/auth/send-otp", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email: email.toLowerCase().trim() }),
-			});
 
-			if (!response.ok) {
-				toast.error("Failed to resend code");
-				return;
-			}
+		try {
+			await sendOTP(normalizeEmail(email));
 
 			toast.success("Code resent!", {
 				description: "A new code has been sent to your email.",
 			});
 		} catch (error: unknown) {
-			console.error("Error resending OTP:", error);
-			toast.error("Failed to resend code");
+			toast.error(
+				error instanceof Error ? error.message : "Failed to resend code",
+			);
 		} finally {
 			setLoading(false);
 		}

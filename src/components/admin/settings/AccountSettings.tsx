@@ -1,19 +1,26 @@
 "use client";
 
 import { CheckCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getAdminUser, normalizeEmail } from "@/lib/auth";
 
 export default function AccountSettings() {
 	const [showSuccess, setShowSuccess] = useState(false);
+	const [email, setEmail] = useState("");
+
+	useEffect(() => {
+		const user = getAdminUser();
+		if (user) {
+			setEmail(user.email);
+		}
+	}, []);
 
 	const handleSave = () => {
 		setShowSuccess(true);
 		toast.success("Settings saved successfully");
 		setTimeout(() => setShowSuccess(false), 3000);
 	};
-
-	const handleLogout = () => toast.success("Logged out successfully");
 
 	return (
 		<div className="space-y-8">
@@ -38,38 +45,40 @@ export default function AccountSettings() {
 				</p>
 			</div>
 
-			{/* Username */}
+			{/* Username/Email */}
 			<div className="space-y-4">
 				<div>
-					<label className="text-sm font-medium mb-2 block">Username</label>
+					<label className="text-sm font-medium mb-2 block">
+						Email Address
+					</label>
 					<input
-						type="text"
-						defaultValue="admin@company.org"
-						className="w-full px-4 py-2.5 rounded-lg bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(normalizeEmail(e.target.value))}
+						className="w-full px-4 py-2.5 rounded-lg bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
 					/>
 				</div>
 
-				{/* Password */}
+				{/* Password - Note: Next-auth/Supabase handles password reset via email usually */}
 				<div className="flex gap-4">
-					<div className="flex-1">
+					<div className="flex-1 opacity-60">
 						<label className="text-sm font-medium mb-2 block">Password</label>
 						<div className="relative">
 							<input
 								type="password"
-								defaultValue="••••••••••••"
-								className="w-full px-4 py-2.5 rounded-lg bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+								disabled
+								value="••••••••••••"
+								className="w-full px-4 py-2.5 rounded-lg bg-muted border border-border cursor-not-allowed"
 							/>
 						</div>
 					</div>
 					<div className="flex-1">
 						<label className="text-sm font-medium mb-2 block">
-							Password Requirements
+							Authentication Method
 						</label>
-						<div className="space-y-1 text-xs text-muted-foreground">
-							<p>1. At least 8 characters</p>
-							<p>2. At least one uppercase letter</p>
-							<p>3. At least one number</p>
-						</div>
+						<p className="text-xs text-muted-foreground">
+							Secure OTP-based login enabled for {email}.
+						</p>
 					</div>
 				</div>
 
@@ -113,12 +122,7 @@ export default function AccountSettings() {
 				<p className="text-sm text-muted-foreground mb-4">
 					Deleting your account is permanent and cannot be reversed.
 				</p>
-				<button
-					onClick={handleLogout}
-					className="px-6 py-2.5 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium transition-colors border border-red-200 dark:border-red-800"
-				>
-					Delete Account
-				</button>
+				
 			</div>
 		</div>
 	);

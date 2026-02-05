@@ -20,12 +20,14 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getAdminUser, handleLogout } from "@/lib/auth";
 
 interface SettingsPanelProps {
 	onClose: () => void;
 }
 
 export default function SettingsPanel({ onClose }: SettingsPanelProps) {
+	const adminUser = getAdminUser();
 	const [theme, setTheme] = useState<"light" | "dark" | "system">("dark");
 	const [emailNotifications, setEmailNotifications] = useState(true);
 	const [pushNotifications, setPushNotifications] = useState(true);
@@ -35,21 +37,6 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 	const handleSave = () => {
 		toast.success("Settings saved successfully");
 		onClose();
-	};
-
-	const handleLogout = async () => {
-		try {
-			const response = await fetch("/api/auth/logout", { method: "POST" });
-			if (response.ok) {
-				toast.success("Logged out successfully");
-				window.location.href = "/admin/login";
-			} else {
-				toast.error("Logout failed");
-			}
-		} catch (error: unknown) {
-			console.error("Logout error:", error);
-			toast.error("An error occurred during logout");
-		}
 	};
 
 	const accentColors = [
@@ -265,7 +252,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 										<span className="text-sm">Current User</span>
 									</div>
 									<span className="text-sm font-bold">
-										admin@drdsolutions.com
+										{adminUser?.email || "admin@drdsolutions.com"}
 									</span>
 								</div>
 								<div className="flex items-center justify-between">

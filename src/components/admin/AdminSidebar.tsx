@@ -3,6 +3,8 @@
 import {
 	BarChart3,
 	Calendar,
+	ExternalLink,
+	FileText,
 	LayoutDashboard,
 	LogOut,
 	Settings,
@@ -12,6 +14,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AdminUser, getAdminUser, handleLogout } from "@/lib/auth";
+
+interface NavLink {
+	label: string;
+	href: string;
+	icon: React.ElementType;
+	isExternal?: boolean;
+}
 
 interface AdminSidebarProps {
 	className?: string;
@@ -23,43 +33,42 @@ export default function AdminSidebar({
 	onNavigate,
 }: AdminSidebarProps) {
 	const pathname = usePathname();
-	const [adminUser, setAdminUser] = useState<{ name: string; email: string } | null>(null);
+	const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
 	useEffect(() => {
-		// Parse admin_user cookie
-		const cookies = document.cookie.split('; ');
-		const adminCookie = cookies.find(row => row.startsWith('admin_user='));
-		if (adminCookie) {
-			try {
-				const userData = JSON.parse(decodeURIComponent(adminCookie.split('=')[1]));
-				setAdminUser(userData);
-			} catch (e) {
-				console.error("Failed to parse admin user cookie", e);
-			}
-		}
+		setAdminUser(getAdminUser());
 	}, []);
 
-	const handleLogout = async () => {
-		try {
-			const response = await fetch("/api/auth/logout", { method: "POST" });
-			if (response.ok) {
-				toast.success("Logged out successfully");
-				window.location.href = "/admin/login";
-			} else {
-				toast.error("Logout failed");
-			}
-		} catch (error: unknown) {
-			console.error("Logout error:", error);
-			toast.error("An error occurred during logout");
-		}
-	};
-
-	const links = [
-		{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-		{ label: "Bookings", href: "/admin/bookings", icon: Calendar },
-		{ label: "Clients", href: "/admin/clients", icon: Users },
-		{ label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-		{ label: "Settings", href: "/admin/settings", icon: Settings },
+	const navigation: { group: string; links: NavLink[] }[] = [
+		{
+			group: "General",
+			links: [
+				{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+				{ label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+			],
+		},
+		{
+			group: "Business",
+			links: [
+				{ label: "Bookings", href: "/admin/bookings", icon: Calendar },
+				{ label: "Clients", href: "/admin/clients", icon: Users },
+			],
+		},
+		{
+			group: "Content",
+			links: [
+				{
+					label: "Sanity Studio",
+					href: "/studio",
+					icon: FileText,
+					isExternal: true,
+				},
+			],
+		},
+		{
+			group: "System",
+			links: [{ label: "Settings", href: "/admin/settings", icon: Settings }],
+		},
 	];
 
 	return (
@@ -74,25 +83,52 @@ export default function AdminSidebar({
 			</div>
 
 			{/* Navigation */}
-			<nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-				{links.map((link) => {
-					const isActive = pathname === link.href;
-					return (
-						<Link
-							key={link.href}
-							href={link.href}
-							onClick={onNavigate}
-							className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
-								isActive
-									? "bg-primary/10 text-primary"
-									: "text-muted-foreground hover:bg-muted hover:text-foreground"
-							}`}
-						>
-							<link.icon size={20} />
-							{link.label}
-						</Link>
-					);
-				})}
+			<nav className="flex-1 p-4 space-y-8 overflow-y-auto">
+				{navigation.map((section) => (
+					<div key={section.group} className="space-y-2">
+						<h3 className="px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3">
+							{section.group}
+						</h3>
+						<div className="space-y-1">
+							{section.links.map((link: NavLink) => {
+								const isActive = pathname === link.href;
+								const LinkIcon = link.icon;
+
+								return (
+									<Link
+										key={link.href}
+										href={link.href}
+										onClick={onNavigate}
+										target={link.isExternal ? "_blank" : undefined}
+										className={`flex items-center justify-between group px-4 py-2.5 rounded-xl transition-all duration-200 font-medium text-sm ${
+											isActive
+												? "bg-primary/10 text-primary shadow-sm"
+												: "text-muted-foreground hover:bg-muted hover:text-foreground"
+										}`}
+									>
+										<div className="flex items-center gap-3">
+											<LinkIcon
+												size={18}
+												className={`${
+													isActive
+														? "text-primary"
+														: "group-hover:text-foreground"
+												} transition-colors`}
+											/>
+											{link.label}
+										</div>
+										{link.isExternal && (
+											<ExternalLink
+												size={14}
+												className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-200 text-muted-foreground/50"
+											/>
+										)}
+									</Link>
+								);
+							})}
+						</div>
+					</div>
+				))}
 			</nav>
 
 			{/* Footer User Profile */}
@@ -111,11 +147,14 @@ export default function AdminSidebar({
 					</div>
 				</div>
 
-				<button 
+				<button
 					onClick={handleLogout}
 					className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-400/10 rounded-xl transition-all group"
 				>
-					<LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
+					<LogOut
+						size={18}
+						className="group-hover:translate-x-1 transition-transform"
+					/>
 					Logout
 				</button>
 			</div>
