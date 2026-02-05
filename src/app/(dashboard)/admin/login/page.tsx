@@ -157,7 +157,7 @@ export default function AdminLoginPage() {
 
 							<div>
 								<label className="text-sm font-medium mb-2 block">
-									6-Digit Code
+									8-Digit Code
 								</label>
 								<div className="relative">
 									<Lock
@@ -170,12 +170,12 @@ export default function AdminLoginPage() {
 										onChange={(e) => {
 											const value = e.target.value
 												.replace(/\D/g, "")
-												.slice(0, 6);
+												.slice(0, 8);
 											setOtp(value);
 										}}
 										placeholder="000000"
 										required
-										maxLength={6}
+										maxLength={8}
 										className="w-full pl-12 pr-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-center text-2xl font-mono tracking-widest"
 									/>
 								</div>
