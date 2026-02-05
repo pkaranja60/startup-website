@@ -38,7 +38,7 @@ export default function SettingsPage() {
 		<div className="min-h-screen bg-background">
 			<div className="flex">
 				{/* Sidebar */}
-				<aside className="w-64 min-h-screen bg-card border-r border-border p-6 ml-14">
+				<aside className="w-64 min-h-screen bg-card border-r border-border p-6">
 					<div className="mb-8">
 						<div className="mb-5 pb-5 border-b border-border space-y-1">
 							<h2 className="text-sm font-bold text-muted-foreground mb-4 uppercase tracking-wider">

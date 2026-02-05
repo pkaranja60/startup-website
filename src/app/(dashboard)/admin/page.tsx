@@ -23,7 +23,8 @@ export default function AdminDashboard() {
 				const response = await fetch("/api/bookings");
 				const data = await response.json();
 				if (data.bookings) setBookings(data.bookings);
-			} catch (error) {
+			} catch (error: unknown) {
+				console.error("Failed to load dashboard data:", error);
 				toast.error("Failed to load dashboard data");
 			} finally {
 				setLoading(false);

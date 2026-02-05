@@ -22,7 +22,28 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// Verify OTP with Supabase Auth
+		// 1. Double-check user is in admin_users table BEFORE verifying OTP
+		// This ensures we use the Service Role permissions before the client state changes
+		const { data: adminUser, error: adminError } = await supabase
+			.from("admin_users")
+			.select("*")
+			.eq("email", email.toLowerCase())
+			.single();
+
+		if (adminError || !adminUser || !adminUser.is_active) {
+			console.warn("Unauthorized verify attempt (Admin Check Failed):", {
+				email: email.toLowerCase(),
+				found: !!adminUser,
+				active: adminUser?.is_active,
+				error: adminError,
+			});
+			return NextResponse.json(
+				{ error: "Unauthorized access" },
+				{ status: 403 },
+			);
+		}
+
+		// 2. Verify OTP with Supabase Auth
 		const { data: authData, error: verifyError } =
 			await supabase.auth.verifyOtp({
 				email: email.toLowerCase(),
@@ -43,20 +64,6 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json(
 				{ error: "Invalid or expired OTP" },
 				{ status: 401 },
-			);
-		}
-
-		// Double-check user is in admin_users table
-		const { data: adminUser, error: adminError } = await supabase
-			.from("admin_users")
-			.select("*")
-			.eq("email", email.toLowerCase())
-			.single();
-
-		if (adminError || !adminUser || !adminUser.is_active) {
-			return NextResponse.json(
-				{ error: "Unauthorized access" },
-				{ status: 403 },
 			);
 		}
 
