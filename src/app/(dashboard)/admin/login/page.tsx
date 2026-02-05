@@ -166,17 +166,26 @@ export default function AdminLoginPage() {
 									/>
 									<input
 										type="text"
-										value={otp}
+										// VISUAL: If otp is 12345678, this displays "1234-5678"
+										value={
+											otp.length > 4
+												? `${otp.slice(0, 4)}-${otp.slice(4)}`
+												: otp
+										}
 										onChange={(e) => {
-											const value = e.target.value
+											// 1. Remove the hyphen and any non-digits to get raw state
+											const rawValue = e.target.value
 												.replace(/\D/g, "")
 												.slice(0, 8);
-											setOtp(value);
+
+											// 2. Save only the numbers to your 'otp' state
+											setOtp(rawValue);
 										}}
-										placeholder="000000"
+										placeholder="0000-0000"
 										required
-										maxLength={8}
-										className="w-full pl-12 pr-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-center text-2xl font-mono tracking-widest"
+										// 3. Set to 9 to accommodate 8 digits + 1 hyphen
+										maxLength={9}
+										className="w-full py-3 rounded-xl bg-muted border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-center text-2xl font-mono tracking-widest"
 									/>
 								</div>
 								<p className="text-xs text-muted-foreground mt-2 text-center">
