@@ -1,10 +1,26 @@
 "use client";
 
-import { Clock, Database, Globe, LogOut, User } from "lucide-react";
+import { Globe, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getAdminUser, handleLogout } from "@/lib/auth";
 
 export default function SessionSettings() {
-	const handleLogout = () => toast.success("Logged out successfully");
+	const [email, setEmail] = useState("");
+	const [startTime, setStartTime] = useState("");
+
+	useEffect(() => {
+		const user = getAdminUser();
+		if (user) {
+			setEmail(user.email);
+		}
+		setStartTime(
+			new Date().toLocaleTimeString("en-US", {
+				hour: "2-digit",
+				minute: "2-digit",
+			}),
+		);
+	}, []);
 
 	return (
 		<div className="space-y-8">
@@ -22,7 +38,9 @@ export default function SessionSettings() {
 							<Globe size={20} className="text-primary" />
 							<div>
 								<p className="font-medium text-sm">Current Session</p>
-								<p className="text-xs text-muted-foreground">Nairobi, Kenya</p>
+								<p className="text-xs text-muted-foreground">
+									Detected Location: Nairobi, Kenya
+								</p>
 							</div>
 						</div>
 						<span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">
@@ -32,16 +50,11 @@ export default function SessionSettings() {
 					<div className="grid grid-cols-2 gap-4 text-sm">
 						<div>
 							<p className="text-muted-foreground mb-1">User</p>
-							<p className="font-medium">admin@drdsolutions.com</p>
+							<p className="font-medium">{email || "admin@drdsolutions.com"}</p>
 						</div>
 						<div>
 							<p className="text-muted-foreground mb-1">Started</p>
-							<p className="font-medium">
-								{new Date().toLocaleTimeString("en-US", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}
-							</p>
+							<p className="font-medium">{startTime}</p>
 						</div>
 						<div>
 							<p className="text-muted-foreground mb-1">Database</p>
