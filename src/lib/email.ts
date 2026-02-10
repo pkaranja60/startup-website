@@ -1,7 +1,8 @@
 "use server";
 
-import nodemailer from "nodemailer";
 import { google } from "googleapis";
+import nodemailer from "nodemailer";
+import { Booking } from "@/types/booking";
 
 // Google Calendar API Setup
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
@@ -15,32 +16,35 @@ const calendar = google.calendar({ version: "v3", auth });
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
-	service: "gmail",
+	host: "mail.drdmedia.site",
+	port: 465,
+	secure: true,
 	auth: {
-		user: process.env.EMAIL_USER,
-		pass: process.env.EMAIL_APP_PASSWORD,
+		user: process.env.ADMIN_EMAIL,
+		pass: process.env.ADMIN_PASSWORD,
 	},
 });
 
-
 export async function generateGoogleMeetLink(
-	bookingData: any,
+	bookingData: Booking,
 ): Promise<string> {
 	try {
-        // Parse booking date and time (assuming YYYY-MM-DD and HH:MM AM/PM)
-        const [time, period] = bookingData.booking_time.split(" ");
-        const [hours, minutes] = time.split(":").map(Number);
-        let hour24 = hours;
-        if (period === "PM" && hours !== 12) hour24 += 12;
-        if (period === "AM" && hours === 12) hour24 = 0;
+		// Parse booking date and time (assuming YYYY-MM-DD and HH:MM AM/PM)
+		const [time, period] = bookingData.booking_time.split(" ");
+		const [hours, minutes] = time.split(":").map(Number);
+		let hour24 = hours;
+		if (period === "PM" && hours !== 12) hour24 += 12;
+		if (period === "AM" && hours === 12) hour24 = 0;
 
-        const startDateTime = new Date(`${bookingData.booking_date}T${String(hour24).padStart(2, '0')}:${String(minutes || 0).padStart(2, '0')}:00`);
-        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+		const startDateTime = new Date(
+			`${bookingData.booking_date}T${String(hour24).padStart(2, "0")}:${String(minutes || 0).padStart(2, "0")}:00`,
+		);
+		const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
 
 		console.log("Creating Calendar Event:", {
 			start: startDateTime.toISOString(),
 			end: endDateTime.toISOString(),
-			requestId: `meet-${Date.now()}-${(bookingData.id || "manual").slice(0, 8)}`
+			requestId: `meet-${Date.now()}-${(bookingData.id || "manual").slice(0, 8)}`,
 		});
 
 		let eventResponse;
@@ -70,11 +74,13 @@ export async function generateGoogleMeetLink(
 				},
 			});
 		} catch (insertError: any) {
-			console.warn("First attempt with conference data failed, retrying without it...");
+			console.warn(
+				"First attempt with conference data failed, retrying without it...",
+			);
 			// If it failed with 400 or unauthorized, try creating the event WITHOUT the meet link
 			// but including our fallback link in the location and description.
 			const manualLink = `https://meet.google.com/discovery-${(bookingData.id || "manual").slice(0, 8)}`;
-			
+
 			eventResponse = await calendar.events.insert({
 				calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
 				requestBody: {
@@ -93,26 +99,28 @@ export async function generateGoogleMeetLink(
 			});
 		}
 
-        const meetLink = eventResponse.data.conferenceData?.entryPoints?.[0]?.uri;
-        
-        if (!meetLink) {
-            console.warn("Failed to generate Google Meet link, falling back to static");
-            return `https://meet.google.com/discovery-${(bookingData.id || "manual").slice(0, 8)}`;
-        }
+		const meetLink = eventResponse.data.conferenceData?.entryPoints?.[0]?.uri;
 
-        return meetLink;
+		if (!meetLink) {
+			console.warn(
+				"Failed to generate Google Meet link, falling back to static",
+			);
+			return `https://meet.google.com/discovery-${(bookingData.id || "manual").slice(0, 8)}`;
+		}
+
+		return meetLink;
 	} catch (error: any) {
 		console.error("Google Calendar Error Full Detail:", {
 			message: error.message,
 			details: error.response?.data?.error || error.response?.data,
-			status: error.status
+			status: error.status,
 		});
 		// Return a fallback link instead of failing the whole process
 		return `https://meet.google.com/fallback-${(bookingData.id || "error").slice(0, 8)}`;
 	}
 }
 
-async function createCalendarEvent(bookingData: any, meetLink: string) {
+async function createCalendarEvent(bookingData: Booking, meetLink: string) {
 	const startDateTime = new Date(
 		`${bookingData.booking_date}T${bookingData.booking_time}`,
 	);
@@ -144,13 +152,13 @@ END:VCALENDAR`;
 
 // 1. Initial Booking Receipt (Sent to client immediately after booking)
 export async function sendBookingReceiptEmail(
-	bookingData: any,
+	bookingData: Booking,
 	meetLink: string,
 ) {
 	const calendarAttachment = await createCalendarEvent(bookingData, meetLink);
 
 	const mailOptions = {
-		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.ADMIN_EMAIL}>`,
 		to: bookingData.client_email,
 		subject: "📅 Discovery Session Request Received - DrD Solutions",
 		html: `
@@ -208,10 +216,10 @@ export async function sendBookingReceiptEmail(
 }
 
 // 2. Admin Notification (Sent to admin immediately after booking)
-export async function sendAdminNotificationEmail(bookingData: any) {
+export async function sendAdminNotificationEmail(bookingData: Booking) {
 	const mailOptions = {
-		from: `"DrD Solutions Bookings" <${process.env.EMAIL_USER}>`,
-		to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+		from: `"DrD Solutions Bookings" <${process.env.ADMIN_EMAIL}>`,
+		to: process.env.USER_EMAIL,
 		subject: `🔔 New Booking Request - ${bookingData.client_name}`,
 		html: `
       <!DOCTYPE html>
@@ -284,9 +292,9 @@ export async function sendAdminNotificationEmail(bookingData: any) {
 }
 
 // 3. Admin Approval (Sent manually by admin to confirm session)
-export async function sendApprovalEmail(booking: any) {
+export async function sendApprovalEmail(booking: Booking) {
 	const mailOptions = {
-		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.ADMIN_EMAIL}>`,
 		to: booking.client_email,
 		subject: "✅ Your Discovery Session is Officially Confirmed!",
 		html: `
@@ -328,9 +336,9 @@ export async function sendApprovalEmail(booking: any) {
 }
 
 // 4. Session Completion (Sent manually by admin after meeting)
-export async function sendCompletionEmail(booking: any) {
+export async function sendCompletionEmail(booking: Booking) {
 	const mailOptions = {
-		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.ADMIN_EMAIL}>`,
 		to: booking.client_email,
 		subject: "🎯 Discovery Session: Notes & Next Steps",
 		html: `
@@ -352,9 +360,9 @@ export async function sendCompletionEmail(booking: any) {
 }
 
 // 5. Booking Cancellation (Sent manually by admin)
-export async function sendCancellationEmail(booking: any) {
+export async function sendCancellationEmail(booking: Booking) {
 	const mailOptions = {
-		from: `"DrD Solutions" <${process.env.EMAIL_USER}>`,
+		from: `"DrD Solutions" <${process.env.ADMIN_EMAIL}>`,
 		to: booking.client_email,
 		subject: "🚫 Update Regarding Your Discovery Session",
 		html: `
@@ -378,40 +386,42 @@ export async function sendCancellationEmail(booking: any) {
 }
 
 /**
- * Syncs a booking to Google Calendar. 
+ * Syncs a booking to Google Calendar.
  * If the event doesn't exist, it creates it.
  * Since we don't store event IDs, this actually creates a new event.
  */
-export async function syncCalendarEvent(booking: any) {
-    try {
-        const [time, period] = booking.booking_time.split(" ");
-        const [hours, minutes] = time.split(":").map(Number);
-        let hour24 = hours;
-        if (period === "PM" && hours !== 12) hour24 += 12;
-        if (period === "AM" && hours === 12) hour24 = 0;
+export async function syncCalendarEvent(booking: Booking) {
+	try {
+		const [time, period] = booking.booking_time.split(" ");
+		const [hours, minutes] = time.split(":").map(Number);
+		let hour24 = hours;
+		if (period === "PM" && hours !== 12) hour24 += 12;
+		if (period === "AM" && hours === 12) hour24 = 0;
 
-        const startDateTime = new Date(`${booking.booking_date}T${String(hour24).padStart(2, '0')}:${String(minutes || 0).padStart(2, '0')}:00`);
-        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+		const startDateTime = new Date(
+			`${booking.booking_date}T${String(hour24).padStart(2, "0")}:${String(minutes || 0).padStart(2, "0")}:00`,
+		);
+		const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
-        await calendar.events.insert({
-            calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
-            requestBody: {
-                summary: `Discovery Session with ${booking.client_name}`,
-                description: `Discovery session regarding: ${booking.project_type || "Not specified"}\n\nMeeting Link: ${booking.google_meet_link}\n\nNotes: ${booking.notes || "None"}\n\nAdmin Notes: ${booking.admin_notes || "None"}`,
-                location: booking.google_meet_link,
-                start: {
-                    dateTime: startDateTime.toISOString(),
-                    timeZone: "Africa/Nairobi",
-                },
-                end: {
-                    dateTime: endDateTime.toISOString(),
-                    timeZone: "Africa/Nairobi",
-                },
-            },
-        });
-        return true;
-    } catch (error) {
-        console.error("Failed to sync calendar event:", error);
-        return false;
-    }
+		await calendar.events.insert({
+			calendarId: process.env.ADMIN_EMAIL || "peterkaranja60@gmail.com",
+			requestBody: {
+				summary: `Discovery Session with ${booking.client_name}`,
+				description: `Discovery session regarding: ${booking.project_type || "Not specified"}\n\nMeeting Link: ${booking.google_meet_link}\n\nNotes: ${booking.notes || "None"}\n\nAdmin Notes: ${booking.admin_notes || "None"}`,
+				location: booking.google_meet_link,
+				start: {
+					dateTime: startDateTime.toISOString(),
+					timeZone: "Africa/Nairobi",
+				},
+				end: {
+					dateTime: endDateTime.toISOString(),
+					timeZone: "Africa/Nairobi",
+				},
+			},
+		});
+		return true;
+	} catch (error) {
+		console.error("Failed to sync calendar event:", error);
+		return false;
+	}
 }

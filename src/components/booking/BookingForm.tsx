@@ -27,6 +27,7 @@ interface BookingFormProps {
 	selectedTime: string | null;
 	onConfirm: (data: BookingFormValues) => Promise<void>;
 	isSubmitting: boolean;
+	disabled: boolean;
 }
 
 const PROJECT_TYPES = [
@@ -44,6 +45,7 @@ export function BookingForm({
 	selectedTime,
 	onConfirm,
 	isSubmitting,
+	disabled,
 }: BookingFormProps) {
 	const form = useForm<BookingFormValues>({
 		resolver: zodResolver(bookingSchema),
@@ -55,6 +57,8 @@ export function BookingForm({
 			project_type: "",
 			notes: "",
 		},
+		mode: "onChange",
+		reValidateMode: "onChange",
 	});
 
 	// const isSubmitting = form.formState.isSubmitting;
@@ -115,7 +119,7 @@ export function BookingForm({
 					<Controller
 						name="client_phone"
 						control={form.control}
-						render={({ field }) => (
+						render={({ field, fieldState }) => (
 							<Field>
 								<FieldLabel>Phone Number</FieldLabel>
 								<InputField
@@ -124,6 +128,7 @@ export function BookingForm({
 									icon={Phone}
 									placeholder="+254 712 345 678"
 								/>
+								{fieldState.error && <FieldError errors={[fieldState.error]} />}
 							</Field>
 						)}
 					/>
@@ -132,7 +137,7 @@ export function BookingForm({
 					<Controller
 						name="client_company"
 						control={form.control}
-						render={({ field }) => (
+						render={({ field, fieldState }) => (
 							<Field>
 								<FieldLabel>Company Name</FieldLabel>
 								<InputField
@@ -140,6 +145,7 @@ export function BookingForm({
 									icon={Building}
 									placeholder="Acme Corp"
 								/>
+								{fieldState.error && <FieldError errors={[fieldState.error]} />}
 							</Field>
 						)}
 					/>
@@ -199,12 +205,7 @@ export function BookingForm({
 				<div className="flex justify-center items-center md:justify-end">
 					<button
 						type="submit"
-						disabled={
-							isSubmitting ||
-							!selectedDate ||
-							!selectedTime ||
-							!form.formState.isValid
-						}
+						disabled={isSubmitting || !form.formState.isValid || disabled}
 						className="inline-flex items-center gap-2 bg-primary text-background px-8 py-4 rounded-full font-bold shadow-xl shadow-primary/40 hover:scale-105 disabled:opacity-50"
 					>
 						{isSubmitting ? (

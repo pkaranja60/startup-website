@@ -2,13 +2,13 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-
+import { toast } from "sonner";
+import { BookingFormValues } from "@/lib/bookingSchema";
+import { Booking } from "@/types/booking";
 import BookingConfirmation from "../booking/BookingConfirmation";
 import { BookingForm } from "../booking/BookingForm";
 import DateSelector from "../booking/DateSelector";
 import TimeSelector from "../booking/TimeSelector";
-
-import { BookingFormValues } from "@/lib/bookingSchema";
 
 const TIME_SLOTS = [
 	"9:00 AM",
@@ -27,17 +27,17 @@ export default function BookingClient() {
 	const [selectedTime, setSelectedTime] = useState<string | null>(null);
 	const [isConfirmed, setIsConfirmed] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [bookingData, setBookingData] = useState<any>(null);
+	const [bookingData, setBookingData] = useState<Booking | null>(null);
 
 	const handleConfirm = async (data: BookingFormValues) => {
 		if (!selectedDate || !selectedTime) {
-			setError("Please select a date and time.");
+			toast.error("Missing information", {
+				description: "Please select a date and time.",
+			});
 			return;
 		}
 
 		setIsSubmitting(true);
-		setError(null);
 
 		try {
 			const payload = {
@@ -45,7 +45,9 @@ export default function BookingClient() {
 				client_email: data.client_email.trim().toLowerCase(),
 				client_phone: data.client_phone || null,
 				client_company: data.client_company || null,
-				booking_date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`,
+				booking_date: `${selectedDate.getFullYear()}-${String(
+					selectedDate.getMonth() + 1,
+				).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`,
 				booking_time: selectedTime,
 				project_type: data.project_type || null,
 				notes: data.notes || null,
@@ -53,20 +55,26 @@ export default function BookingClient() {
 
 			const response = await fetch("/api/bookings", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
 			});
 
 			const result = await response.json();
 
 			if (!response.ok) {
-				throw new Error(result.error || "Failed to book session");
+				toast.error("Booking failed", {
+					description: result?.error || "Failed to book session.",
+				});
+				return; // ⬅️ IMPORTANT
 			}
 
+			// ✅ Success
 			setBookingData(result.booking);
 			setIsConfirmed(true);
+
+			toast.success("Booking confirmed 🎉", {
+				description: "We've saved your session and sent a confirmation email.",
+			});
 
 			// Optional analytics
 			if (typeof window !== "undefined" && (window as any).gtag) {
@@ -78,14 +86,15 @@ export default function BookingClient() {
 			}
 		} catch (err: any) {
 			console.error("Booking error:", err);
-			setError(
-				err.message ||
-					"Something went wrong. Please try again or contact us directly.",
-			);
+
+			toast.error("Something went wrong", {
+				description: err?.message || "Please try again or contact us directly.",
+			});
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
+
 
 	const resetBooking = () => {
 		setIsConfirmed(false);
@@ -93,7 +102,6 @@ export default function BookingClient() {
 		setSelectedDate(null);
 		setSelectedTime(null);
 	};
-
 
 	if (isConfirmed && bookingData) {
 		return (
@@ -123,17 +131,6 @@ export default function BookingClient() {
 					</p>
 				</motion.div>
 
-				{/* Error Alert */}
-				{error && (
-					<motion.div
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="max-w-2xl mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"
-					>
-						⚠️ {error}
-					</motion.div>
-				)}
-
 				{/* Date + Time */}
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
 					<DateSelector
@@ -155,6 +152,7 @@ export default function BookingClient() {
 					selectedTime={selectedTime}
 					isSubmitting={isSubmitting}
 					onConfirm={handleConfirm}
+					disabled={!selectedDate || !selectedTime}
 				/>
 			</div>
 		</div>
